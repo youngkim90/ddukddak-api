@@ -40,6 +40,38 @@
 
 ---
 
+## 시스템 아키텍처
+
+```mermaid
+flowchart TB
+    subgraph Client["클라이언트"]
+        WEB["ddukddak-web<br/>(Next.js)"]
+    end
+
+    subgraph Backend["백엔드"]
+        API["ddukddak-api<br/>(NestJS)"]
+    end
+
+    subgraph Supabase["Supabase"]
+        AUTH["Auth"]
+        DB[(PostgreSQL)]
+        STORAGE["Storage<br/>(이미지/오디오)"]
+    end
+
+    subgraph Payment["결제"]
+        TOSS["토스페이먼츠"]
+    end
+
+    WEB -->|"Supabase Auth"| AUTH
+    WEB -->|"REST API + JWT"| API
+    API -->|"JWT 검증"| AUTH
+    API -->|"CRUD"| DB
+    API -->|"파일 URL"| STORAGE
+    API <-->|"정기결제/웹훅"| TOSS
+```
+
+---
+
 ## 프로젝트 구조 (목표)
 
 ```
@@ -129,52 +161,68 @@ src/
 
 ---
 
-## DB 스키마 (Supabase PostgreSQL)
+## DB ERD (Supabase PostgreSQL)
 
-```
-users           # Supabase Auth 연동
-├── id (uuid, PK)
-├── email
-├── nickname
-├── avatar_url
-├── provider (email/kakao/google)
-└── created_at
+```mermaid
+erDiagram
+    users ||--o{ subscriptions : has
+    users ||--o{ reading_progress : has
+    stories ||--o{ story_pages : contains
+    stories ||--o{ reading_progress : tracked_by
 
-stories         # 동화 정보
-├── id (uuid, PK)
-├── title_ko / title_en
-├── description_ko / description_en
-├── category (전래/교훈/가정/모험)
-├── age_group (3-5/5-7)
-├── thumbnail_url
-├── is_free
-├── page_count
-└── duration_minutes
+    users {
+        uuid id PK
+        string email
+        string nickname
+        string avatar_url
+        string provider "email/kakao/google"
+        timestamp created_at
+    }
 
-story_pages     # 동화 페이지
-├── id (uuid, PK)
-├── story_id (FK)
-├── page_number
-├── image_url
-├── text_ko / text_en
-└── audio_url_ko / audio_url_en
+    stories {
+        uuid id PK
+        string title_ko
+        string title_en
+        string description_ko
+        string description_en
+        string category "전래/교훈/가정/모험"
+        string age_group "3-5/5-7"
+        string thumbnail_url
+        boolean is_free
+        int page_count
+        int duration_minutes
+    }
 
-subscriptions   # 구독 정보
-├── id (uuid, PK)
-├── user_id (FK)
-├── plan_type (monthly/yearly)
-├── status (active/cancelled/expired)
-├── started_at / expires_at
-├── auto_renew
-└── toss_billing_key
+    story_pages {
+        uuid id PK
+        uuid story_id FK
+        int page_number
+        string image_url
+        string text_ko
+        string text_en
+        string audio_url_ko
+        string audio_url_en
+    }
 
-reading_progress # 읽기 진행률
-├── id (uuid, PK)
-├── user_id (FK)
-├── story_id (FK)
-├── current_page
-├── is_completed
-└── last_read_at
+    subscriptions {
+        uuid id PK
+        uuid user_id FK
+        string plan_type "monthly/yearly"
+        string status "active/cancelled/expired"
+        timestamp started_at
+        timestamp expires_at
+        boolean auto_renew
+        string toss_billing_key
+    }
+
+    reading_progress {
+        uuid id PK
+        uuid user_id FK
+        uuid story_id FK
+        int current_page
+        boolean is_completed
+        timestamp last_read_at
+    }
 ```
 
 ---

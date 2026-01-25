@@ -25,6 +25,17 @@
 | 결제 | 토스페이먼츠 |
 | 배포 | Google Cloud Run |
 
+## 아키텍처
+
+```mermaid
+flowchart LR
+    WEB["ddukddak-web<br/>(Next.js)"] -->|REST API| API["ddukddak-api<br/>(NestJS)"]
+    WEB -->|Auth| SUPABASE["Supabase"]
+    API -->|JWT 검증| SUPABASE
+    API -->|DB/Storage| SUPABASE
+    API <-->|정기결제| TOSS["토스페이먼츠"]
+```
+
 ## 시작하기
 
 ### 사전 요구사항
