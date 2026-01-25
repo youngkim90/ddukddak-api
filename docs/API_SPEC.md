@@ -29,16 +29,16 @@ Authorization: Bearer <supabase_access_token>
 ```typescript
 interface Story {
   id: string;
-  title: string;           // 제목 (한국어)
+  titleKo: string;         // 제목 (한국어)
   titleEn: string;         // 제목 (영어)
-  description: string;     // 설명 (한국어)
+  descriptionKo: string;   // 설명 (한국어)
   descriptionEn: string;   // 설명 (영어)
   thumbnailUrl: string;
-  category: 'adventure' | 'lesson' | 'emotion' | 'creativity';
+  category: 'folktale' | 'lesson' | 'family' | 'adventure' | 'creativity';
   ageGroup: '3-5' | '5-7' | '7+';
-  duration: number;        // 분 단위
+  durationMinutes: number; // 재생 시간 (분)
   pageCount: number;
-  isLocked: boolean;       // true = 구독 필요 콘텐츠
+  isFree: boolean;         // true = 무료 콘텐츠
   createdAt: string;
 }
 ```
@@ -128,7 +128,7 @@ interface Subscription {
 **Query Parameters:**
 | 파라미터 | 타입 | 필수 | 설명 |
 |---------|------|------|------|
-| category | string | ❌ | adventure, lesson, emotion, creativity |
+| category | string | ❌ | folktale, lesson, family, adventure, creativity |
 | ageGroup | string | ❌ | 3-5, 5-7, 7+ |
 | page | number | ❌ | 페이지 번호 (기본값: 1) |
 | limit | number | ❌ | 페이지당 개수 (기본값: 10) |
@@ -136,26 +136,28 @@ interface Subscription {
 **Response:**
 ```json
 {
-  "data": [
+  "stories": [
     {
       "id": "uuid",
-      "title": "아기돼지 삼형제",
+      "titleKo": "아기돼지 삼형제",
       "titleEn": "Three Little Pigs",
-      "description": "세 마리 돼지의 지혜 이야기",
+      "descriptionKo": "세 마리 돼지의 지혜 이야기",
       "descriptionEn": "A story of three wise pigs",
       "thumbnailUrl": "https://...",
       "category": "lesson",
       "ageGroup": "3-5",
-      "duration": 10,
+      "durationMinutes": 10,
       "pageCount": 12,
-      "isLocked": false
+      "isFree": true
     }
   ],
-  "meta": {
-    "total": 50,
+  "pagination": {
     "page": 1,
     "limit": 10,
-    "totalPages": 5
+    "total": 50,
+    "totalPages": 5,
+    "hasNext": true,
+    "hasPrev": false
   }
 }
 ```
@@ -167,16 +169,16 @@ interface Subscription {
 ```json
 {
   "id": "uuid",
-  "title": "아기돼지 삼형제",
+  "titleKo": "아기돼지 삼형제",
   "titleEn": "Three Little Pigs",
-  "description": "세 마리 돼지의 지혜 이야기",
+  "descriptionKo": "세 마리 돼지의 지혜 이야기",
   "descriptionEn": "A story of three wise pigs",
   "thumbnailUrl": "https://...",
   "category": "lesson",
   "ageGroup": "3-5",
-  "duration": 10,
+  "durationMinutes": 10,
   "pageCount": 12,
-  "isLocked": false,
+  "isFree": true,
   "createdAt": "2024-01-01T00:00:00Z"
 }
 ```
@@ -253,14 +255,14 @@ interface Subscription {
     {
       "id": "monthly",
       "name": "월간 구독",
-      "price": 9900,
+      "price": 4900,
       "period": "monthly",
       "features": ["모든 동화 무제한", "오프라인 저장"]
     },
     {
       "id": "yearly",
       "name": "연간 구독",
-      "price": 99000,
+      "price": 39000,
       "period": "yearly",
       "features": ["모든 동화 무제한", "오프라인 저장", "2개월 무료"]
     }
@@ -410,8 +412,8 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 1. **인증 토큰 만료**: Supabase 토큰 만료 시 401 응답. 프론트에서 자동 갱신 처리 필요.
 
 2. **구독 체크**: `GET /api/stories/:id/pages` 호출 시
-   - `isLocked: false` 동화 → 바로 접근 가능
-   - `isLocked: true` 동화 → 활성 구독 필요 (403 반환)
+   - `isFree: true` 동화 → 바로 접근 가능
+   - `isFree: false` 동화 → 활성 구독 필요 (403 반환)
 
 3. **에러 메시지 형식**: `message`는 `string` 또는 `string[]`일 수 있음
    ```typescript

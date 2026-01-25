@@ -5,12 +5,12 @@ import { Transform } from 'class-transformer';
 export class StoryQueryDto {
   @ApiProperty({
     description: '카테고리 필터',
-    enum: ['adventure', 'lesson', 'emotion', 'creativity'],
+    enum: ['folktale', 'lesson', 'family', 'adventure', 'creativity'],
     required: false,
   })
   @IsOptional()
-  @IsEnum(['adventure', 'lesson', 'emotion', 'creativity'])
-  category?: 'adventure' | 'lesson' | 'emotion' | 'creativity';
+  @IsEnum(['folktale', 'lesson', 'family', 'adventure', 'creativity'])
+  category?: 'folktale' | 'lesson' | 'family' | 'adventure' | 'creativity';
 
   @ApiProperty({
     description: '연령대 필터',

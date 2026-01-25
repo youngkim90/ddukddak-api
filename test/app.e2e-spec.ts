@@ -60,8 +60,8 @@ describe('AppController (e2e)', () => {
     it('/api/stories (GET) should return 200', async () => {
       const response = await request(app.getHttpServer()).get('/api/stories').expect(200);
 
-      expect(response.body).toHaveProperty('data');
-      expect(response.body).toHaveProperty('meta');
+      expect(response.body).toHaveProperty('stories');
+      expect(response.body).toHaveProperty('pagination');
     });
 
     it('/api/subscriptions/plans (GET) should return 200', async () => {

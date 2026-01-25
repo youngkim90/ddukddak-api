@@ -13,7 +13,7 @@ const SUBSCRIPTION_PLANS = {
   monthly: {
     id: 'monthly',
     name: '월간 구독',
-    price: 9900,
+    price: 4900,
     period: 'monthly' as const,
     features: ['모든 동화 무제한', '오프라인 저장'],
     durationDays: 30,
@@ -21,7 +21,7 @@ const SUBSCRIPTION_PLANS = {
   yearly: {
     id: 'yearly',
     name: '연간 구독',
-    price: 99000,
+    price: 39000,
     period: 'yearly' as const,
     features: ['모든 동화 무제한', '오프라인 저장', '2개월 무료'],
     durationDays: 365,

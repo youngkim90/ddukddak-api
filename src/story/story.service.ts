@@ -38,15 +38,18 @@ export class StoryService {
     }
 
     const total = count ?? 0;
+    const totalPages = Math.ceil(total / limit);
     const stories = (data ?? []).map((story) => this.mapToResponse(story));
 
     return {
-      data: stories,
-      meta: {
-        total,
+      stories,
+      pagination: {
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
       },
     };
   }
@@ -100,16 +103,16 @@ export class StoryService {
   private mapToResponse(data: Record<string, unknown>, includeCreatedAt = false): StoryResponseDto {
     const response: StoryResponseDto = {
       id: data.id as string,
-      title: data.title_ko as string,
+      titleKo: data.title_ko as string,
       titleEn: data.title_en as string,
-      description: data.description_ko as string,
+      descriptionKo: data.description_ko as string,
       descriptionEn: data.description_en as string,
       thumbnailUrl: data.thumbnail_url as string,
       category: data.category as StoryResponseDto['category'],
       ageGroup: data.age_group as StoryResponseDto['ageGroup'],
-      duration: data.duration_minutes as number,
+      durationMinutes: data.duration_minutes as number,
       pageCount: data.page_count as number,
-      isLocked: !(data.is_free as boolean),
+      isFree: data.is_free as boolean,
     };
 
     if (includeCreatedAt) {

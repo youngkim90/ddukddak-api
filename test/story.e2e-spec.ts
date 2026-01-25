@@ -112,11 +112,11 @@ describe('StoryController (e2e)', () => {
 
       const response = await request(app.getHttpServer()).get('/api/stories').expect(200);
 
-      expect(response.body).toHaveProperty('data');
-      expect(response.body).toHaveProperty('meta');
-      expect(Array.isArray(response.body.data)).toBe(true);
-      expect(response.body.meta.total).toBe(2);
-      expect(response.body.meta.page).toBe(1);
+      expect(response.body).toHaveProperty('stories');
+      expect(response.body).toHaveProperty('pagination');
+      expect(Array.isArray(response.body.stories)).toBe(true);
+      expect(response.body.pagination.total).toBe(2);
+      expect(response.body.pagination.page).toBe(1);
     });
 
     it('should filter stories by category', async () => {
@@ -131,7 +131,7 @@ describe('StoryController (e2e)', () => {
         .get('/api/stories?category=adventure')
         .expect(200);
 
-      expect(response.body.data.length).toBe(1);
+      expect(response.body.stories.length).toBe(1);
       expect(mockSupabaseClient.eq).toHaveBeenCalledWith('category', 'adventure');
     });
 
@@ -147,7 +147,7 @@ describe('StoryController (e2e)', () => {
         .get('/api/stories?ageGroup=5-7')
         .expect(200);
 
-      expect(response.body.data.length).toBe(1);
+      expect(response.body.stories.length).toBe(1);
       expect(mockSupabaseClient.eq).toHaveBeenCalledWith('age_group', '5-7');
     });
 
@@ -178,10 +178,12 @@ describe('StoryController (e2e)', () => {
         .get('/api/stories?page=1&limit=1')
         .expect(200);
 
-      expect(response.body.data.length).toBe(1);
-      expect(response.body.meta.page).toBe(1);
-      expect(response.body.meta.limit).toBe(1);
-      expect(response.body.meta.totalPages).toBe(2);
+      expect(response.body.stories.length).toBe(1);
+      expect(response.body.pagination.page).toBe(1);
+      expect(response.body.pagination.limit).toBe(1);
+      expect(response.body.pagination.totalPages).toBe(2);
+      expect(response.body.pagination.hasNext).toBe(true);
+      expect(response.body.pagination.hasPrev).toBe(false);
     });
   });
 
@@ -197,7 +199,7 @@ describe('StoryController (e2e)', () => {
         .expect(200);
 
       expect(response.body.id).toBe(mockStories[0].id);
-      expect(response.body.title).toBe(mockStories[0].title_ko);
+      expect(response.body.titleKo).toBe(mockStories[0].title_ko);
     });
 
     it('should return 404 for non-existent story', async () => {

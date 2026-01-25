@@ -5,13 +5,13 @@ export class StoryResponseDto {
   id!: string;
 
   @ApiProperty({ description: '제목 (한국어)' })
-  title!: string;
+  titleKo!: string;
 
   @ApiProperty({ description: '제목 (영어)' })
   titleEn!: string;
 
   @ApiProperty({ description: '설명 (한국어)' })
-  description!: string;
+  descriptionKo!: string;
 
   @ApiProperty({ description: '설명 (영어)' })
   descriptionEn!: string;
@@ -21,21 +21,21 @@ export class StoryResponseDto {
 
   @ApiProperty({
     description: '카테고리',
-    enum: ['adventure', 'lesson', 'emotion', 'creativity'],
+    enum: ['folktale', 'lesson', 'family', 'adventure', 'creativity'],
   })
-  category!: 'adventure' | 'lesson' | 'emotion' | 'creativity';
+  category!: 'folktale' | 'lesson' | 'family' | 'adventure' | 'creativity';
 
   @ApiProperty({ description: '연령대', enum: ['3-5', '5-7', '7+'] })
   ageGroup!: '3-5' | '5-7' | '7+';
 
   @ApiProperty({ description: '재생 시간 (분)' })
-  duration!: number;
+  durationMinutes!: number;
 
   @ApiProperty({ description: '페이지 수' })
   pageCount!: number;
 
-  @ApiProperty({ description: '잠금 여부 (구독 필요 콘텐츠)' })
-  isLocked!: boolean;
+  @ApiProperty({ description: '무료 콘텐츠 여부' })
+  isFree!: boolean;
 
   @ApiProperty({ description: '생성일', required: false })
   createdAt?: string;
@@ -72,24 +72,30 @@ export class StoryPagesResponseDto {
   pages!: StoryPageDto[];
 }
 
-export class PaginationMetaDto {
-  @ApiProperty({ description: '전체 개수' })
-  total!: number;
-
+export class PaginationDto {
   @ApiProperty({ description: '현재 페이지' })
   page!: number;
 
   @ApiProperty({ description: '페이지당 개수' })
   limit!: number;
 
+  @ApiProperty({ description: '전체 개수' })
+  total!: number;
+
   @ApiProperty({ description: '전체 페이지 수' })
   totalPages!: number;
+
+  @ApiProperty({ description: '다음 페이지 존재 여부' })
+  hasNext!: boolean;
+
+  @ApiProperty({ description: '이전 페이지 존재 여부' })
+  hasPrev!: boolean;
 }
 
 export class StoryListResponseDto {
   @ApiProperty({ description: '동화 목록', type: [StoryResponseDto] })
-  data!: StoryResponseDto[];
+  stories!: StoryResponseDto[];
 
   @ApiProperty({ description: '페이지네이션 정보' })
-  meta!: PaginationMetaDto;
+  pagination!: PaginationDto;
 }
