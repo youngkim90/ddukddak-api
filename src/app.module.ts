@@ -7,6 +7,8 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
 import { ProgressModule } from './progress/progress.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ProgressModule } from './progress/progress.module';
     UserModule,
     StoryModule,
     ProgressModule,
+    SubscriptionModule,
+    WebhookModule,
   ],
   controllers: [],
   providers: [

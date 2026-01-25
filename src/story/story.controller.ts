@@ -36,9 +36,7 @@ export class StoryController {
     type: StoryResponseDto,
   })
   @ApiResponse({ status: 404, description: '동화를 찾을 수 없음' })
-  async findOne(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<StoryResponseDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<StoryResponseDto> {
     return this.storyService.findOne(id);
   }
 
@@ -55,9 +53,7 @@ export class StoryController {
   @ApiResponse({ status: 401, description: '인증 실패' })
   @ApiResponse({ status: 403, description: '구독 필요' })
   @ApiResponse({ status: 404, description: '동화를 찾을 수 없음' })
-  async findPages(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<StoryPagesResponseDto> {
+  async findPages(@Param('id', ParseUUIDPipe) id: string): Promise<StoryPagesResponseDto> {
     return this.storyService.findPages(id);
   }
 }

@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../../supabase/supabase.service';
@@ -51,9 +46,7 @@ export class SubscriptionGuard implements CanActivate {
         }
       }
 
-      throw new ForbiddenException(
-        'Active subscription required to access this content',
-      );
+      throw new ForbiddenException('Active subscription required to access this content');
     }
 
     return true;

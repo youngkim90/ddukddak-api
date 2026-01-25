@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
-import {
-  ProgressResponseDto,
-  ProgressListResponseDto,
-  UpdateProgressDto,
-} from './dto';
+import { ProgressResponseDto, ProgressListResponseDto, UpdateProgressDto } from './dto';
 
 @Injectable()
 export class ProgressService {
@@ -31,9 +27,7 @@ export class ProgressService {
       throw new Error(`Failed to fetch progress: ${error.message}`);
     }
 
-    const progressList = (data ?? []).map((item) =>
-      this.mapToResponse(item),
-    );
+    const progressList = (data ?? []).map((item) => this.mapToResponse(item));
 
     return { data: progressList };
   }
@@ -56,9 +50,7 @@ export class ProgressService {
       .single();
 
     if (error || !data) {
-      throw new NotFoundException(
-        `Progress for story ${storyId} not found`,
-      );
+      throw new NotFoundException(`Progress for story ${storyId} not found`);
     }
 
     return this.mapToResponse(data);

@@ -97,10 +97,7 @@ export class StoryService {
     };
   }
 
-  private mapToResponse(
-    data: Record<string, unknown>,
-    includeCreatedAt = false,
-  ): StoryResponseDto {
+  private mapToResponse(data: Record<string, unknown>, includeCreatedAt = false): StoryResponseDto {
     const response: StoryResponseDto = {
       id: data.id as string,
       title: data.title_ko as string,

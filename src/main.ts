@@ -4,7 +4,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true, // Enable raw body for webhook signature verification
+  });
 
   // Global prefix
   app.setGlobalPrefix('api');
@@ -43,6 +45,7 @@ async function bootstrap() {
       .addTag('stories', '동화 API')
       .addTag('progress', '진행률 API')
       .addTag('subscriptions', '구독 API')
+      .addTag('webhooks', '웹훅 API')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

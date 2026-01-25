@@ -335,10 +335,10 @@ interface Subscription {
 | GET /api/progress | ✅ 완료 | |
 | GET /api/progress/:storyId | ✅ 완료 | |
 | PUT /api/progress/:storyId | ✅ 완료 | |
-| GET /api/subscriptions/plans | ⬜ 대기 | |
-| GET /api/subscriptions/me | ⬜ 대기 | |
-| POST /api/subscriptions | ⬜ 대기 | |
-| DELETE /api/subscriptions/me | ⬜ 대기 | |
+| GET /api/subscriptions/plans | ✅ 완료 | |
+| GET /api/subscriptions/me | ✅ 완료 | |
+| POST /api/subscriptions | ✅ 완료 | |
+| DELETE /api/subscriptions/me | ✅ 완료 | |
 
 ---
 

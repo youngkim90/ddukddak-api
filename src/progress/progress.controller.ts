@@ -1,26 +1,9 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Param,
-  Body,
-  ParseUUIDPipe,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, Put, Param, Body, ParseUUIDPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser } from '../common/decorators';
 import { ProgressService } from './progress.service';
-import {
-  ProgressListResponseDto,
-  ProgressResponseDto,
-  UpdateProgressDto,
-} from './dto';
+import { ProgressListResponseDto, ProgressResponseDto, UpdateProgressDto } from './dto';
 
 @ApiTags('progress')
 @ApiBearerAuth('access-token')
