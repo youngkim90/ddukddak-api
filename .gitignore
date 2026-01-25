@@ -17,10 +17,12 @@ logs/
 npm-debug.log*
 pnpm-debug.log*
 
-# Claude Code
+# Claude Code / MCP
 .claude/
 .mcp.json
 .cclsp.json
+cclsp.json
+.serena/
 CLAUDE.local.md
 
 # IDE
