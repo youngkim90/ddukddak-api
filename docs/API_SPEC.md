@@ -329,9 +329,9 @@ interface Subscription {
 | GET /api/users/me | ✅ 완료 | |
 | PATCH /api/users/me | ✅ 완료 | |
 | DELETE /api/users/me | ✅ 완료 | |
-| GET /api/stories | ⬜ 대기 | |
-| GET /api/stories/:id | ⬜ 대기 | |
-| GET /api/stories/:id/pages | ⬜ 대기 | |
+| GET /api/stories | ✅ 완료 | |
+| GET /api/stories/:id | ✅ 완료 | |
+| GET /api/stories/:id/pages | ✅ 완료 | |
 | GET /api/progress | ⬜ 대기 | |
 | GET /api/progress/:storyId | ⬜ 대기 | |
 | PUT /api/progress/:storyId | ⬜ 대기 | |

@@ -290,12 +290,12 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 2/7 (28%)
+### 진행률: 3/7 (42%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
 ✅ 2-2. 사용자 API         [██████████] 100%
-⬜ 2-3. 동화 API           [          ] 0%
+✅ 2-3. 동화 API           [██████████] 100%
 ⬜ 2-4. 진행률 API         [          ] 0%
 ⬜ 2-5. 구독/결제 API      [          ] 0%
 ⬜ 2-6. 프론트 API 연동    [          ] 0%
@@ -318,10 +318,10 @@ pnpm run test:e2e     # E2E 테스트
 | | - GET /api/users/me | ✅ | 프로필 조회 |
 | | - PATCH /api/users/me | ✅ | 프로필 수정 |
 | | - DELETE /api/users/me | ✅ | 회원 탈퇴 |
-| 2-3 | 동화 API | ⬜ 대기 | |
-| | - GET /api/stories | ⬜ | |
-| | - GET /api/stories/:id | ⬜ | |
-| | - GET /api/stories/:id/pages | ⬜ | |
+| 2-3 | 동화 API | ✅ 완료 | |
+| | - GET /api/stories | ✅ | 목록 조회 (필터, 페이지네이션) |
+| | - GET /api/stories/:id | ✅ | 상세 조회 |
+| | - GET /api/stories/:id/pages | ✅ | 페이지 조회 (SubscriptionGuard) |
 | 2-4 | 진행률 API | ⬜ 대기 | |
 | | - GET /api/progress | ⬜ | |
 | | - GET/PUT /api/progress/:storyId | ⬜ | |
@@ -349,6 +349,29 @@ pnpm run test:e2e     # E2E 테스트
 - [x] 공통 모듈 구조 (decorators, guards)
 - [ ] Docker 설정
 - [ ] CI/CD 설정
+
+---
+
+## 테스트 전략
+
+**접근 방식**: Phase 2-5 완료 후 통합 테스트 작성
+
+```
+Phase 2-1 ~ 2-5: 핵심 API 빠르게 구현 (테스트 생략)
+        ↓
+Phase 2-5 완료 후: E2E/통합 테스트 작성
+        ↓
+Phase 2-6 (프론트 연동): 실제 시나리오 기반 테스트 보강
+```
+
+**예외 (개발 시 즉시 테스트 작성):**
+- 결제/구독 로직 (토스페이먼츠 연동) - 금전 관련
+- 인증/권한 로직 - 보안 관련
+
+**테스트 도구:**
+- Unit Test: Jest (NestJS 기본)
+- E2E Test: Supertest + Jest
+- 목표 커버리지: 핵심 비즈니스 로직 80% 이상
 
 ---
 
