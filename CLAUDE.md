@@ -22,7 +22,7 @@
 | **프레임워크** | NestJS 11.0.1 |
 | **패키지 매니저** | pnpm |
 | **Node 버전** | 20+ |
-| **API Base URL** | `http://localhost:3000/api` (개발) |
+| **API Base URL** | `http://localhost:4000/api` (개발) |
 
 ---
 
@@ -290,11 +290,11 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 1/7 (14%)
+### 진행률: 2/7 (28%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
-⬜ 2-2. 사용자 API         [          ] 0%
+✅ 2-2. 사용자 API         [██████████] 100%
 ⬜ 2-3. 동화 API           [          ] 0%
 ⬜ 2-4. 진행률 API         [          ] 0%
 ⬜ 2-5. 구독/결제 API      [          ] 0%
@@ -314,10 +314,10 @@ pnpm run test:e2e     # E2E 테스트
 | | - Swagger 설정 | ✅ | /docs 엔드포인트 |
 | | - 공통 모듈 구조 | ✅ | decorators, guards |
 | | - Docker 설정 | ⬜ | |
-| 2-2 | 사용자 API | ⬜ 대기 | |
-| | - GET /api/users/me | ⬜ | |
-| | - PATCH /api/users/me | ⬜ | |
-| | - DELETE /api/users/me | ⬜ | |
+| 2-2 | 사용자 API | ✅ 완료 | |
+| | - GET /api/users/me | ✅ | 프로필 조회 |
+| | - PATCH /api/users/me | ✅ | 프로필 수정 |
+| | - DELETE /api/users/me | ✅ | 회원 탈퇴 |
 | 2-3 | 동화 API | ⬜ 대기 | |
 | | - GET /api/stories | ⬜ | |
 | | - GET /api/stories/:id | ⬜ | |

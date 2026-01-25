@@ -9,11 +9,8 @@ export class SupabaseService implements OnModuleInit {
 
   constructor(private configService: ConfigService) {
     const supabaseUrl = this.configService.getOrThrow<string>('supabase.url');
-    const supabaseAnonKey =
-      this.configService.getOrThrow<string>('supabase.anonKey');
-    const supabaseServiceRoleKey = this.configService.getOrThrow<string>(
-      'supabase.serviceRoleKey',
-    );
+    const supabaseAnonKey = this.configService.getOrThrow<string>('supabase.anonKey');
+    const supabaseServiceRoleKey = this.configService.getOrThrow<string>('supabase.serviceRoleKey');
 
     // Public client (respects RLS)
     this.client = createClient(supabaseUrl, supabaseAnonKey);

@@ -2,8 +2,8 @@
 
 > 프론트엔드 연동용 API 명세 (프롱님 참고용)
 
-**Base URL**: `http://localhost:3000/api` (개발)
-**Swagger**: `http://localhost:3000/docs` (개발 환경에서만)
+**Base URL**: `http://localhost:4000/api` (개발)
+**Swagger**: `http://localhost:4000/docs` (개발 환경에서만)
 
 ---
 
@@ -326,9 +326,9 @@ interface Subscription {
 
 | API | 상태 | 비고 |
 |-----|------|------|
-| GET /api/users/me | ⬜ 대기 | |
-| PATCH /api/users/me | ⬜ 대기 | |
-| DELETE /api/users/me | ⬜ 대기 | |
+| GET /api/users/me | ✅ 완료 | |
+| PATCH /api/users/me | ✅ 완료 | |
+| DELETE /api/users/me | ✅ 완료 | |
 | GET /api/stories | ⬜ 대기 | |
 | GET /api/stories/:id | ⬜ 대기 | |
 | GET /api/stories/:id/pages | ⬜ 대기 | |
