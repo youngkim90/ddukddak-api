@@ -290,7 +290,7 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 5/7 (71%)
+### 진행률: 6/9 (66%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
@@ -298,6 +298,8 @@ pnpm run test:e2e     # E2E 테스트
 ✅ 2-3. 동화 API           [██████████] 100%
 ✅ 2-4. 진행률 API         [██████████] 100%
 ✅ 2-5. 구독/결제 API      [██████████] 100%
+✅ 2-5a. Supabase 연동     [██████████] 100%
+⬜ 2-5b. 테스트 코드 작성  [          ] 0%   ← 다음
 ⬜ 2-6. 프론트 API 연동    [          ] 0%
 ⬜ 2-7. 배포               [          ] 0%
 ```
@@ -333,6 +335,15 @@ pnpm run test:e2e     # E2E 테스트
 | | - DELETE /api/subscriptions/me | ✅ | 구독 해지 |
 | | - 토스페이먼츠 연동 | ✅ | TossService |
 | | - POST /api/webhooks/toss | ✅ | 웹훅 처리 |
+| 2-5a | Supabase 연동 | ✅ 완료 | |
+| | - Supabase 프로젝트 생성 | ✅ | knunektvaagejsgqbhvw.supabase.co |
+| | - 테이블 생성 (ERD 기반) | ✅ | users, stories, story_pages, subscriptions, reading_progress |
+| | - .env 실제 키 설정 | ✅ | URL, ANON_KEY, SERVICE_ROLE_KEY |
+| | - API 통합 테스트 | ✅ | 동화 목록/상세 API 검증 완료 |
+| 2-5b | 테스트 코드 작성 | ⬜ 대기 | |
+| | - E2E 테스트 | ⬜ | Supertest + Jest |
+| | - 구독/결제 유닛 테스트 | ⬜ | TossService 모킹 |
+| | - 인증 테스트 | ⬜ | JWT Guard 검증 |
 | 2-6 | 프론트 API 연동 | ⬜ 대기 | |
 | 2-7 | 배포 | ⬜ 대기 | |
 
