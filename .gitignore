@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build output
+dist/
+build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Claude Code
+.claude/
+.mcp.json
+.cclsp.json
+CLAUDE.local.md
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor backup
+*~
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+
+# Turbo
+.turbo/
+
+# Sentry
+.sentryclirc
