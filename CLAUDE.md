@@ -120,7 +120,7 @@ src/
 
 ## API 엔드포인트
 
-> 상세 명세: `../fairytale-planning/docs/5_API_SPEC.md`
+> 상세 명세: `docs/API_SPEC.md` (프론트엔드 연동용)
 
 ### 사용자 (User)
 | 메서드 | 엔드포인트 | 설명 | 인증 |
@@ -185,8 +185,8 @@ erDiagram
         string title_en
         string description_ko
         string description_en
-        string category "전래/교훈/가정/모험"
-        string age_group "3-5/5-7"
+        string category "adventure/lesson/emotion/creativity"
+        string age_group "3-5/5-7/7+"
         string thumbnail_url
         boolean is_free
         int page_count
@@ -290,10 +290,10 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 0/7 (0%)
+### 진행률: 1/7 (14%)
 
 ```
-⬜ 2-1. 프로젝트 세팅      [          ] 0%
+✅ 2-1. 프로젝트 세팅      [████████  ] 85%
 ⬜ 2-2. 사용자 API         [          ] 0%
 ⬜ 2-3. 동화 API           [          ] 0%
 ⬜ 2-4. 진행률 API         [          ] 0%
@@ -306,13 +306,13 @@ pnpm run test:e2e     # E2E 테스트
 
 | # | 작업 | 상태 | 완료 항목 |
 |---|------|------|----------|
-| 2-1 | 프로젝트 세팅 | ⬜ 대기 | |
-| | - 필수 패키지 설치 | ⬜ | |
-| | - 모듈 구조 생성 | ⬜ | |
-| | - Supabase 클라이언트 | ⬜ | |
-| | - JWT Guard 설정 | ⬜ | |
-| | - Swagger 설정 | ⬜ | |
-| | - 환경 변수 설정 | ⬜ | |
+| 2-1 | 프로젝트 세팅 | 🔄 진행 중 | |
+| | - 필수 패키지 설치 | ✅ | @nestjs/config, @supabase/supabase-js, class-validator, class-transformer, @nestjs/swagger |
+| | - 환경 변수 설정 | ✅ | ConfigModule, .env.example |
+| | - Supabase 클라이언트 | ✅ | SupabaseModule, SupabaseService |
+| | - JWT Guard 설정 | ✅ | JwtAuthGuard, @Public, @CurrentUser |
+| | - Swagger 설정 | ✅ | /docs 엔드포인트 |
+| | - 공통 모듈 구조 | ✅ | decorators, guards |
 | | - Docker 설정 | ⬜ | |
 | 2-2 | 사용자 API | ⬜ 대기 | |
 | | - GET /api/users/me | ⬜ | |
@@ -341,11 +341,12 @@ pnpm run test:e2e     # E2E 테스트
 - [x] TypeScript strict mode
 - [x] ESLint + Prettier 설정
 - [x] Git 저장소 연동
-- [ ] 필수 패키지 설치
-- [ ] 모듈 구조 생성
-- [ ] Supabase 연동
-- [ ] JWT Guard 설정
-- [ ] Swagger 설정
+- [x] 필수 패키지 설치
+- [x] 환경 변수 설정 (ConfigModule)
+- [x] Supabase 클라이언트 모듈
+- [x] JWT Guard 설정
+- [x] Swagger 설정
+- [x] 공통 모듈 구조 (decorators, guards)
 - [ ] Docker 설정
 - [ ] CI/CD 설정
 
