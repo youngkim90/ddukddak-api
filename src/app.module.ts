@@ -6,6 +6,7 @@ import { JwtAuthGuard, SubscriptionGuard } from './common/guards';
 import { SupabaseModule } from './supabase/supabase.module';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
+import { ProgressModule } from './progress/progress.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { StoryModule } from './story/story.module';
     SupabaseModule,
     UserModule,
     StoryModule,
+    ProgressModule,
   ],
   controllers: [],
   providers: [

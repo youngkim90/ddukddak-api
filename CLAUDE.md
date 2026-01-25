@@ -290,13 +290,13 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 3/7 (42%)
+### 진행률: 4/7 (57%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
 ✅ 2-2. 사용자 API         [██████████] 100%
 ✅ 2-3. 동화 API           [██████████] 100%
-⬜ 2-4. 진행률 API         [          ] 0%
+✅ 2-4. 진행률 API         [██████████] 100%
 ⬜ 2-5. 구독/결제 API      [          ] 0%
 ⬜ 2-6. 프론트 API 연동    [          ] 0%
 ⬜ 2-7. 배포               [          ] 0%
@@ -322,9 +322,10 @@ pnpm run test:e2e     # E2E 테스트
 | | - GET /api/stories | ✅ | 목록 조회 (필터, 페이지네이션) |
 | | - GET /api/stories/:id | ✅ | 상세 조회 |
 | | - GET /api/stories/:id/pages | ✅ | 페이지 조회 (SubscriptionGuard) |
-| 2-4 | 진행률 API | ⬜ 대기 | |
-| | - GET /api/progress | ⬜ | |
-| | - GET/PUT /api/progress/:storyId | ⬜ | |
+| 2-4 | 진행률 API | ✅ 완료 | |
+| | - GET /api/progress | ✅ | 진행률 목록 조회 |
+| | - GET /api/progress/:storyId | ✅ | 특정 동화 진행률 |
+| | - PUT /api/progress/:storyId | ✅ | 진행률 저장 |
 | 2-5 | 구독/결제 API | ⬜ 대기 | |
 | | - 구독 플랜/정보 조회 | ⬜ | |
 | | - 구독 시작/해지 | ⬜ | |

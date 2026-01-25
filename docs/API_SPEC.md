@@ -332,9 +332,9 @@ interface Subscription {
 | GET /api/stories | ✅ 완료 | |
 | GET /api/stories/:id | ✅ 완료 | |
 | GET /api/stories/:id/pages | ✅ 완료 | |
-| GET /api/progress | ⬜ 대기 | |
-| GET /api/progress/:storyId | ⬜ 대기 | |
-| PUT /api/progress/:storyId | ⬜ 대기 | |
+| GET /api/progress | ✅ 완료 | |
+| GET /api/progress/:storyId | ✅ 완료 | |
+| PUT /api/progress/:storyId | ✅ 완료 | |
 | GET /api/subscriptions/plans | ⬜ 대기 | |
 | GET /api/subscriptions/me | ⬜ 대기 | |
 | POST /api/subscriptions | ⬜ 대기 | |
