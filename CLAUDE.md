@@ -290,7 +290,7 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 6/9 (66%)
+### 진행률: 7/9 (77%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
@@ -299,8 +299,8 @@ pnpm run test:e2e     # E2E 테스트
 ✅ 2-4. 진행률 API         [██████████] 100%
 ✅ 2-5. 구독/결제 API      [██████████] 100%
 ✅ 2-5a. Supabase 연동     [██████████] 100%
-⬜ 2-5b. 테스트 코드 작성  [          ] 0%   ← 다음
-⬜ 2-6. 프론트 API 연동    [          ] 0%
+✅ 2-5b. 테스트 코드 작성  [██████████] 100%
+⬜ 2-6. 프론트 API 연동    [          ] 0%   ← 다음
 ⬜ 2-7. 배포               [          ] 0%
 ```
 
@@ -333,17 +333,17 @@ pnpm run test:e2e     # E2E 테스트
 | | - GET /api/subscriptions/me | ✅ | 내 구독 정보 |
 | | - POST /api/subscriptions | ✅ | 구독 시작 (결제) |
 | | - DELETE /api/subscriptions/me | ✅ | 구독 해지 |
-| | - 토스페이먼츠 연동 | ✅ | TossService |
+| | - 토스페이먼츠 연동 | 🔄 | TossService (스켈레톤, 실제 API 연동 대기) |
 | | - POST /api/webhooks/toss | ✅ | 웹훅 처리 |
 | 2-5a | Supabase 연동 | ✅ 완료 | |
 | | - Supabase 프로젝트 생성 | ✅ | knunektvaagejsgqbhvw.supabase.co |
 | | - 테이블 생성 (ERD 기반) | ✅ | users, stories, story_pages, subscriptions, reading_progress |
 | | - .env 실제 키 설정 | ✅ | URL, ANON_KEY, SERVICE_ROLE_KEY |
 | | - API 통합 테스트 | ✅ | 동화 목록/상세 API 검증 완료 |
-| 2-5b | 테스트 코드 작성 | ⬜ 대기 | |
-| | - E2E 테스트 | ⬜ | Supertest + Jest |
-| | - 구독/결제 유닛 테스트 | ⬜ | TossService 모킹 |
-| | - 인증 테스트 | ⬜ | JWT Guard 검증 |
+| 2-5b | 테스트 코드 작성 | ✅ 완료 | |
+| | - E2E 테스트 | ✅ | Story 11개, User 8개, App 2개 |
+| | - 구독/결제 유닛 테스트 | ✅ | SubscriptionService 8개 |
+| | - Mock 기반 테스트 | ✅ | 실제 DB 의존성 없음 |
 | 2-6 | 프론트 API 연동 | ⬜ 대기 | |
 | 2-7 | 배포 | ⬜ 대기 | |
 
@@ -366,37 +366,50 @@ pnpm run test:e2e     # E2E 테스트
 
 ---
 
-## 테스트 전략
+## 테스트 현황
 
-**접근 방식**: Phase 2-5 완료 후 통합 테스트 작성
+**완료된 테스트: 29개**
 
-```
-Phase 2-1 ~ 2-5: 핵심 API 빠르게 구현 (테스트 생략)
-        ↓
-Phase 2-5 완료 후: E2E/통합 테스트 작성
-        ↓
-Phase 2-6 (프론트 연동): 실제 시나리오 기반 테스트 보강
-```
+| 파일 | 테스트 수 | 유형 |
+|------|----------|------|
+| `test/app.e2e-spec.ts` | 2 | E2E |
+| `test/story.e2e-spec.ts` | 11 | E2E |
+| `test/user.e2e-spec.ts` | 8 | E2E |
+| `src/subscription/subscription.service.spec.ts` | 8 | Unit |
 
-**예외 (개발 시 즉시 테스트 작성):**
-- 결제/구독 로직 (토스페이먼츠 연동) - 금전 관련
-- 인증/권한 로직 - 보안 관련
+**테스트 특징:**
+- Mock 기반 테스트 (실제 DB 의존성 없음)
+- CI/CD 환경에서 안전하게 실행 가능
+- 핵심 API 엔드포인트 및 에러 케이스 커버
 
 **테스트 도구:**
 - Unit Test: Jest (NestJS 기본)
 - E2E Test: Supertest + Jest
-- 목표 커버리지: 핵심 비즈니스 로직 80% 이상
 
 ---
 
 ## 관련 프로젝트
 
-```
+```text
 fairytale/
 ├── fairytale-planning/    # 기획 문서 (100% 완료)
 ├── ddukddak-web/          # 프론트엔드 - Phase 1 완료 ✅
-└── ddukddak-api/          # 백엔드 ← 현재 (Phase 2 진행 중)
+└── ddukddak-api/          # 백엔드 ← 현재 (Phase 2: 77% 완료)
 ```
+
+---
+
+## 다음 작업
+
+| 단계 | 작업 | 담당 | 상태 |
+|------|------|------|------|
+| 2-6 | 프론트 API 연동 | 프롱 | ⏳ 대기 |
+| 2-7 | 배포 (Cloud Run) | 코난 | ⏳ 대기 |
+| - | 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 (프론트 연동 후) |
+
+**프론트 연동 참고자료:**
+- API 명세서: `docs/API_SPEC.md`
+- Swagger: `http://localhost:4000/docs`
 
 ---
 

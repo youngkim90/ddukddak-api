@@ -322,6 +322,69 @@ interface Subscription {
 
 ---
 
+## 프론트엔드 연동 가이드
+
+### axios 설정 예시
+
+```typescript
+// lib/api.ts
+import axios from 'axios';
+import { supabase } from './supabase';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api',
+});
+
+// 요청 인터셉터: 토큰 자동 추가
+api.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  return config;
+});
+
+// 응답 인터셉터: 에러 처리
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // 로그인 페이지로 리다이렉트
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+```
+
+### 환경 변수
+
+```env
+# .env.local
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+---
+
+## 구독/결제 플로우
+
+### 빌링키 발급 (프론트에서 처리)
+
+```typescript
+// 토스페이먼츠 SDK로 카드 등록 → 빌링키 발급
+// 1. 토스페이먼츠 결제창 호출
+// 2. 사용자가 카드 정보 입력
+// 3. 성공 시 billingKey 반환
+// 4. billingKey를 POST /api/subscriptions에 전달
+```
+
+> ⚠️ **현재 상태**: 토스페이먼츠 실제 연동은 스켈레톤 구현입니다.
+> 프론트 UI 완성 후 실제 API 연동 예정입니다.
+
+---
+
 ## 개발 현황
 
 | API | 상태 | 비고 |
@@ -329,16 +392,37 @@ interface Subscription {
 | GET /api/users/me | ✅ 완료 | |
 | PATCH /api/users/me | ✅ 완료 | |
 | DELETE /api/users/me | ✅ 완료 | |
-| GET /api/stories | ✅ 완료 | |
+| GET /api/stories | ✅ 완료 | 필터, 페이지네이션 |
 | GET /api/stories/:id | ✅ 완료 | |
-| GET /api/stories/:id/pages | ✅ 완료 | |
+| GET /api/stories/:id/pages | ✅ 완료 | 무료 동화는 구독 없이 접근 가능 |
 | GET /api/progress | ✅ 완료 | |
 | GET /api/progress/:storyId | ✅ 완료 | |
 | PUT /api/progress/:storyId | ✅ 완료 | |
 | GET /api/subscriptions/plans | ✅ 완료 | |
-| GET /api/subscriptions/me | ✅ 완료 | |
-| POST /api/subscriptions | ✅ 완료 | |
+| GET /api/subscriptions/me | ✅ 완료 | 구독 없으면 null 반환 |
+| POST /api/subscriptions | 🔄 스켈레톤 | 토스 실제 연동 대기 |
 | DELETE /api/subscriptions/me | ✅ 완료 | |
+
+---
+
+## 주의사항
+
+1. **인증 토큰 만료**: Supabase 토큰 만료 시 401 응답. 프론트에서 자동 갱신 처리 필요.
+
+2. **구독 체크**: `GET /api/stories/:id/pages` 호출 시
+   - `isLocked: false` 동화 → 바로 접근 가능
+   - `isLocked: true` 동화 → 활성 구독 필요 (403 반환)
+
+3. **에러 메시지 형식**: `message`는 `string` 또는 `string[]`일 수 있음
+   ```typescript
+   // validation 에러 시
+   { message: ["nickname must be shorter than 50 characters"] }
+
+   // 일반 에러 시
+   { message: "Not found" }
+   ```
+
+4. **날짜 형식**: 모든 날짜는 ISO 8601 형식 (`2024-01-25T10:30:00.000Z`)
 
 ---
 
