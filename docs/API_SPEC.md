@@ -273,7 +273,7 @@ interface Subscription {
 #### GET /api/subscriptions/me 🔒
 내 구독 정보
 
-**Response:**
+**Response (구독 있는 경우):**
 ```json
 {
   "id": "uuid",
@@ -284,6 +284,15 @@ interface Subscription {
   "autoRenew": true
 }
 ```
+
+**Response (구독 없는 경우):**
+```json
+{
+  "subscription": null
+}
+```
+
+> ℹ️ 구독이 없으면 404가 아닌 `{ subscription: null }`을 반환합니다.
 
 #### POST /api/subscriptions 🔒
 구독 시작 (결제)
@@ -389,21 +398,21 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ## 개발 현황
 
-| API | 상태 | 비고 |
-|-----|------|------|
-| GET /api/users/me | ✅ 완료 | |
-| PATCH /api/users/me | ✅ 완료 | |
-| DELETE /api/users/me | ✅ 완료 | |
-| GET /api/stories | ✅ 완료 | 필터, 페이지네이션 |
-| GET /api/stories/:id | ✅ 완료 | |
-| GET /api/stories/:id/pages | ✅ 완료 | 무료 동화는 구독 없이 접근 가능 |
-| GET /api/progress | ✅ 완료 | |
-| GET /api/progress/:storyId | ✅ 완료 | |
-| PUT /api/progress/:storyId | ✅ 완료 | |
-| GET /api/subscriptions/plans | ✅ 완료 | |
-| GET /api/subscriptions/me | ✅ 완료 | 구독 없으면 null 반환 |
-| POST /api/subscriptions | 🔄 스켈레톤 | 토스 실제 연동 대기 |
-| DELETE /api/subscriptions/me | ✅ 완료 | |
+| API | 상태 | 프론트 연동 | 비고 |
+|-----|------|------------|------|
+| GET /api/users/me | ✅ 완료 | ✅ 완료 | |
+| PATCH /api/users/me | ✅ 완료 | ✅ 완료 | |
+| DELETE /api/users/me | ✅ 완료 | ✅ 완료 | |
+| GET /api/stories | ✅ 완료 | ✅ 완료 | 필터, 페이지네이션 |
+| GET /api/stories/:id | ✅ 완료 | ✅ 완료 | |
+| GET /api/stories/:id/pages | ✅ 완료 | ✅ 완료 | 무료 동화는 구독 없이 접근 가능 |
+| GET /api/progress | ✅ 완료 | ✅ 완료 | |
+| GET /api/progress/:storyId | ✅ 완료 | ✅ 완료 | 진행률 없으면 404 |
+| PUT /api/progress/:storyId | ✅ 완료 | ✅ 완료 | upsert 방식 |
+| GET /api/subscriptions/plans | ✅ 완료 | ✅ 완료 | |
+| GET /api/subscriptions/me | ✅ 완료 | ✅ 완료 | 구독 없으면 `{ subscription: null }` |
+| POST /api/subscriptions | 🔄 스켈레톤 | ⏳ 대기 | 토스 실제 연동 대기 |
+| DELETE /api/subscriptions/me | ✅ 완료 | ✅ 완료 | |
 
 ---
 
@@ -428,4 +437,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-01-25*
+*마지막 업데이트: 2026-01-28*

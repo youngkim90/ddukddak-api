@@ -77,13 +77,16 @@ export class ProgressService {
     const { data, error } = await this.supabaseService
       .getAdminClient()
       .from('reading_progress')
-      .upsert({
-        user_id: user.id,
-        story_id: storyId,
-        current_page: updateProgressDto.currentPage,
-        is_completed: updateProgressDto.isCompleted ?? false,
-        last_read_at: new Date().toISOString(),
-      })
+      .upsert(
+        {
+          user_id: user.id,
+          story_id: storyId,
+          current_page: updateProgressDto.currentPage,
+          is_completed: updateProgressDto.isCompleted ?? false,
+          last_read_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,story_id' },
+      )
       .select(
         `
         *,

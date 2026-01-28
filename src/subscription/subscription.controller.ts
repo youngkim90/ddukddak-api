@@ -6,7 +6,6 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { User } from '@supabase/supabase-js';
@@ -40,16 +39,17 @@ export class SubscriptionController {
   @ApiOperation({ summary: '내 구독 정보 조회' })
   @ApiResponse({
     status: 200,
-    description: '구독 정보 조회 성공',
+    description: '구독 정보 조회 성공 (구독 없으면 subscription: null)',
     type: SubscriptionResponseDto,
   })
   @ApiResponse({ status: 401, description: '인증 실패' })
-  @ApiResponse({ status: 404, description: '구독 정보 없음' })
-  async getMySubscription(@CurrentUser() user: User): Promise<SubscriptionResponseDto> {
+  async getMySubscription(
+    @CurrentUser() user: User,
+  ): Promise<SubscriptionResponseDto | { subscription: null }> {
     const subscription = await this.subscriptionService.getMySubscription(user);
 
     if (!subscription) {
-      throw new NotFoundException('No subscription found');
+      return { subscription: null };
     }
 
     return subscription;

@@ -280,7 +280,7 @@ pnpm run test:e2e     # E2E 테스트
 |------|------|
 | 프로젝트 | `../ddukddak-web/` |
 | 프레임워크 | Next.js 16 + TypeScript |
-| 상태 | Phase 1 완료 (13개 화면 UI, Mock 데이터) |
+| 상태 | Phase 2 API 연동 완료 ✅ |
 | Auth | Supabase Auth (프론트에서 직접 연동) |
 | API 호출 | axios + TanStack Query |
 
@@ -290,7 +290,7 @@ pnpm run test:e2e     # E2E 테스트
 
 ## Phase 2 작업 현황
 
-### 진행률: 7/9 (77%)
+### 진행률: 8/9 (88%)
 
 ```
 ✅ 2-1. 프로젝트 세팅      [████████  ] 85%
@@ -300,8 +300,8 @@ pnpm run test:e2e     # E2E 테스트
 ✅ 2-5. 구독/결제 API      [██████████] 100%
 ✅ 2-5a. Supabase 연동     [██████████] 100%
 ✅ 2-5b. 테스트 코드 작성  [██████████] 100%
-⬜ 2-6. 프론트 API 연동    [          ] 0%   ← 다음
-⬜ 2-7. 배포               [          ] 0%
+✅ 2-6. 프론트 API 연동    [██████████] 100%
+⬜ 2-7. 배포               [          ] 0%   ← 다음
 ```
 
 ### 작업 상세
@@ -344,7 +344,11 @@ pnpm run test:e2e     # E2E 테스트
 | | - E2E 테스트 | ✅ | Story 11개, User 8개, App 2개 |
 | | - 구독/결제 유닛 테스트 | ✅ | SubscriptionService 8개 |
 | | - Mock 기반 테스트 | ✅ | 실제 DB 의존성 없음 |
-| 2-6 | 프론트 API 연동 | ⬜ 대기 | |
+| 2-6 | 프론트 API 연동 | ✅ 완료 | |
+| | - 사용자 API 연동 | ✅ | /api/users/* |
+| | - 동화 API 연동 | ✅ | /api/stories/* |
+| | - 진행률 API 연동 | ✅ | /api/progress/* |
+| | - 구독 API 연동 | ✅ | /api/subscriptions/* (토스 결제 제외) |
 | 2-7 | 배포 | ⬜ 대기 | |
 
 ---
@@ -393,8 +397,8 @@ pnpm run test:e2e     # E2E 테스트
 ```text
 fairytale/
 ├── fairytale-planning/    # 기획 문서 (100% 완료)
-├── ddukddak-web/          # 프론트엔드 - Phase 1 완료 ✅
-└── ddukddak-api/          # 백엔드 ← 현재 (Phase 2: 77% 완료)
+├── ddukddak-web/          # 프론트엔드 - Phase 2 API 연동 완료 ✅
+└── ddukddak-api/          # 백엔드 ← 현재 (Phase 2: 88% 완료)
 ```
 
 ---
@@ -403,14 +407,16 @@ fairytale/
 
 | 단계 | 작업 | 담당 | 상태 |
 |------|------|------|------|
-| 2-6 | 프론트 API 연동 | 프롱 | ⏳ 대기 |
-| 2-7 | 배포 (Cloud Run) | 코난 | ⏳ 대기 |
-| - | 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 (프론트 연동 후) |
+| 2-6 | 프론트 API 연동 | 프롱 | ✅ 완료 |
+| 2-7 | 배포 (Cloud Run) | 코난 | ⏳ 대기 ← 다음 |
+| - | 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 |
 
-**프론트 연동 참고자료:**
-- API 명세서: `docs/API_SPEC.md`
-- Swagger: `http://localhost:4000/docs`
+**배포 작업 목록:**
+- Docker 설정
+- Cloud Run 배포
+- 환경 변수 설정 (프로덕션)
+- CI/CD 파이프라인
 
 ---
 
-*마지막 업데이트: 2026-01-25*
+*마지막 업데이트: 2026-01-28*
