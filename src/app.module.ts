@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import configuration from './config/configuration';
 import { JwtAuthGuard, SubscriptionGuard } from './common/guards';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SupabaseModule } from './supabase/supabase.module';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
@@ -25,6 +27,14 @@ import { WebhookModule } from './webhook/webhook.module';
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
