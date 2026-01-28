@@ -6,6 +6,7 @@ import { JwtAuthGuard, SubscriptionGuard } from './common/guards';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SupabaseModule } from './supabase/supabase.module';
+import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
 import { StoryModule } from './story/story.module';
 import { ProgressModule } from './progress/progress.module';
@@ -19,6 +20,7 @@ import { WebhookModule } from './webhook/webhook.module';
       load: [configuration],
     }),
     SupabaseModule,
+    HealthModule,
     UserModule,
     StoryModule,
     ProgressModule,
