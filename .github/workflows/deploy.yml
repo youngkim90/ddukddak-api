@@ -70,7 +70,7 @@ jobs:
             --memory 512Mi \
             --min-instances 0 \
             --max-instances 10 \
-            --set-env-vars "NODE_ENV=production"
+            --set-env-vars "NODE_ENV=production,SUPABASE_URL=${{ secrets.SUPABASE_URL }},SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }},SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
 
       - name: Show URL
         run: |
