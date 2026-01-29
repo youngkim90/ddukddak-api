@@ -10,8 +10,8 @@ export default () => ({
   },
 
   toss: {
-    secretKey: process.env.TOSS_SECRET_KEY,
-    webhookSecret: process.env.TOSS_WEBHOOK_SECRET,
+    secretKey: process.env.TOSS_SECRET_KEY || '',
+    webhookSecret: process.env.TOSS_WEBHOOK_SECRET || '',
   },
 
   cors: {
