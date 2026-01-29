@@ -3,6 +3,12 @@ name: Deploy to Cloud Run
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.idea/**'
+      - 'LICENSE'
   workflow_dispatch:
 
 env:
