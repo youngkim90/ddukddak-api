@@ -16,4 +16,7 @@ export default () => ({
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   },
+
+  // MVP 무료 모드: true이면 SubscriptionGuard가 구독 체크를 스킵합니다
+  enableFreeMode: process.env.ENABLE_FREE_MODE !== 'false',
 });

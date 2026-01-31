@@ -1,21 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SubscriptionPlanDto {
-  @ApiProperty({ description: '플랜 ID', example: 'monthly' })
+  @ApiProperty({ description: '플랜 ID', example: 'free' })
   id!: string;
 
-  @ApiProperty({ description: '플랜 이름', example: '월간 구독' })
+  @ApiProperty({ description: '플랜 이름', example: '무료' })
   name!: string;
 
-  @ApiProperty({ description: '가격 (원)', example: 9900 })
+  @ApiProperty({ description: '가격 (원)', example: 0 })
   price!: number;
 
-  @ApiProperty({ description: '결제 주기', enum: ['monthly', 'yearly'] })
-  period!: 'monthly' | 'yearly';
+  @ApiProperty({
+    description: '결제 주기',
+    enum: ['month', 'year'],
+    nullable: true,
+    example: null,
+  })
+  period!: 'month' | 'year' | null;
 
   @ApiProperty({
     description: '포함 기능',
-    example: ['모든 동화 무제한', '오프라인 저장'],
+    example: ['동화 5편 이용'],
   })
   features!: string[];
 }

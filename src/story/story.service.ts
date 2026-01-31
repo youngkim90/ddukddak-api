@@ -114,6 +114,7 @@ export class StoryService {
       durationMinutes: data.duration_minutes ?? 0,
       pageCount: data.page_count ?? 0,
       isFree: data.is_free,
+      bgmUrl: data.bgm_url ?? undefined,
     };
 
     if (includeCreatedAt) {
@@ -132,6 +133,7 @@ export class StoryService {
       textEn: data.text_en ?? '',
       audioUrlKo: data.audio_url_ko ?? undefined,
       audioUrlEn: data.audio_url_en ?? undefined,
+      lottieUrl: data.lottie_url ?? undefined,
     };
   }
 }

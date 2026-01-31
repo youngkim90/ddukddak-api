@@ -55,7 +55,7 @@
 ```mermaid
 flowchart TB
     subgraph Client["클라이언트"]
-        WEB["ddukddak-web<br/>(Next.js)"]
+        WEB["ddukddak-web<br/>(Expo)"]
     end
 
     subgraph Backend["백엔드"]
@@ -277,10 +277,11 @@ pnpm run test:e2e     # E2E 테스트
 
 | 문서 | 경로 | 용도 |
 |------|------|------|
-| API 명세 | `../fairytale-planning/docs/5_API_SPEC.md` | 엔드포인트 상세 |
-| 기술 스택 | `../fairytale-planning/docs/4_TECH_STACK.md` | 아키텍처, 배포 |
-| 개발 계획 | `../fairytale-planning/docs/6_DEV_PLAN.md` | Phase 2 작업 |
-| 작업 현황 | `../fairytale-planning/docs/7_TASK_TRACKER.md` | 전체 진행률 |
+| API 명세 | `../fairytale-planning/docs/specs/5_API_SPEC.md` | 엔드포인트 상세 |
+| 기술 스택 | `../fairytale-planning/docs/specs/4_TECH_STACK.md` | 아키텍처, 배포 |
+| 개발 계획 | `../fairytale-planning/docs/management/6_DEV_PLAN.md` | Phase 3 작업 |
+| 작업 현황 | `../fairytale-planning/docs/management/7_TASK_TRACKER.md` | 전체 진행률 |
+| 작업 지시서 | `../fairytale-planning/docs/work-orders/WORK_ORDER_CONAN.md` | 백엔드 작업 |
 
 ---
 
@@ -289,7 +290,7 @@ pnpm run test:e2e     # E2E 테스트
 | 항목 | 내용 |
 |------|------|
 | 프로젝트 | `../ddukddak-web/` |
-| 프레임워크 | Next.js 16 + TypeScript |
+| 프레임워크 | Expo 53 + TypeScript |
 | **Production URL** | https://ddukddak.expo.app |
 | 상태 | Phase 2 API 연동 완료 ✅ |
 | Auth | Supabase Auth (프론트에서 직접 연동) |

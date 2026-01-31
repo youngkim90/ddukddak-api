@@ -37,6 +37,9 @@ export class StoryResponseDto {
   @ApiProperty({ description: '무료 콘텐츠 여부' })
   isFree!: boolean;
 
+  @ApiProperty({ description: 'BGM URL', required: false })
+  bgmUrl?: string;
+
   @ApiProperty({ description: '생성일', required: false })
   createdAt?: string;
 }
@@ -62,6 +65,9 @@ export class StoryPageDto {
 
   @ApiProperty({ description: '오디오 URL (영어)', required: false })
   audioUrlEn?: string;
+
+  @ApiProperty({ description: 'Lottie 애니메이션 URL', required: false })
+  lottieUrl?: string;
 }
 
 export class StoryPagesResponseDto {

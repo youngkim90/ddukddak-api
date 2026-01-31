@@ -11,19 +11,27 @@ import {
 
 // 구독 플랜 정의 (하드코딩 - 추후 DB로 이동 가능)
 const SUBSCRIPTION_PLANS = {
+  free: {
+    id: 'free',
+    name: '무료',
+    price: 0,
+    period: null,
+    features: ['동화 5편 이용'],
+    durationDays: 0,
+  },
   monthly: {
     id: 'monthly',
-    name: '월간 구독',
+    name: '월 구독',
     price: 4900,
-    period: 'monthly' as const,
+    period: 'month' as const,
     features: ['모든 동화 무제한', '오프라인 저장'],
     durationDays: 30,
   },
   yearly: {
     id: 'yearly',
-    name: '연간 구독',
+    name: '연 구독',
     price: 39000,
-    period: 'yearly' as const,
+    period: 'year' as const,
     features: ['모든 동화 무제한', '오프라인 저장', '2개월 무료'],
     durationDays: 365,
   },

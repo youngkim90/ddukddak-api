@@ -68,7 +68,7 @@ describe('SubscriptionService', () => {
     it('should return subscription plans', () => {
       const result = service.getPlans();
 
-      expect(result.plans).toHaveLength(2);
+      expect(result.plans).toHaveLength(3);
       expect(result.plans[0]).toHaveProperty('id');
       expect(result.plans[0]).toHaveProperty('name');
       expect(result.plans[0]).toHaveProperty('price');
@@ -80,6 +80,7 @@ describe('SubscriptionService', () => {
       const result = service.getPlans();
       const planIds = result.plans.map((p) => p.id);
 
+      expect(planIds).toContain('free');
       expect(planIds).toContain('monthly');
       expect(planIds).toContain('yearly');
     });
