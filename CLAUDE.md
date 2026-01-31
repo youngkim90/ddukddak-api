@@ -280,6 +280,7 @@ pnpm run test:e2e     # E2E 테스트
 |------|------|
 | 프로젝트 | `../ddukddak-web/` |
 | 프레임워크 | Next.js 16 + TypeScript |
+| **Production URL** | https://ddukddak.expo.app |
 | 상태 | Phase 2 API 연동 완료 ✅ |
 | Auth | Supabase Auth (프론트에서 직접 연동) |
 | API 호출 | axios + TanStack Query |
@@ -424,7 +425,7 @@ fairytale/
 | 작업 | 담당 | 상태 |
 |------|------|------|
 | 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 |
-| 프론트엔드 프로덕션 배포 | 프롱 | ⏳ 대기 |
+| 프론트엔드 프로덕션 배포 | 프롱 | ✅ 완료 |
 | CORS 설정 (프로덕션 URL) | 코난 | ✅ 완료 |
 
 ---
