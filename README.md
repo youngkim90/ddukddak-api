@@ -24,6 +24,7 @@
 | Storage | Supabase Storage |
 | 결제 | 토스페이먼츠 |
 | 배포 | Google Cloud Run |
+| CI/CD | GitHub Actions |
 
 ## 아키텍처
 
@@ -35,6 +36,16 @@ flowchart LR
     API -->|DB/Storage| SUPABASE
     API <-->|정기결제| TOSS["토스페이먼츠"]
 ```
+
+## 배포 정보
+
+| 항목 | 값 |
+|------|-----|
+| Backend | https://ddukddak-api-2lb4yqjazq-du.a.run.app |
+| Frontend | https://ddukddak.expo.app |
+| Health Check | `/api/health` |
+| Region | asia-northeast3 (서울) |
+| CI/CD | main 브랜치 PR 머지 시 자동 배포 |
 
 ## 시작하기
 
@@ -78,20 +89,23 @@ CORS_ORIGIN=http://localhost:3000
 
 ## API 엔드포인트
 
-| 메서드 | 엔드포인트 | 설명 |
-|--------|-----------|------|
-| GET | `/api/users/me` | 내 프로필 조회 |
-| PATCH | `/api/users/me` | 프로필 수정 |
-| DELETE | `/api/users/me` | 회원 탈퇴 |
-| GET | `/api/stories` | 동화 목록 |
-| GET | `/api/stories/:id` | 동화 상세 |
-| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어) |
-| GET | `/api/progress` | 진행률 목록 |
-| GET/PUT | `/api/progress/:storyId` | 동화 진행률 |
-| GET | `/api/subscriptions/plans` | 구독 플랜 |
-| GET | `/api/subscriptions/me` | 내 구독 정보 |
-| POST | `/api/subscriptions` | 구독 시작 |
-| DELETE | `/api/subscriptions/me` | 구독 해지 |
+| 메서드 | 엔드포인트 | 설명 | 인증 |
+|--------|-----------|------|------|
+| GET | `/api/health` | 헬스체크 | |
+| GET | `/api/users/me` | 내 프로필 조회 | JWT |
+| PATCH | `/api/users/me` | 프로필 수정 | JWT |
+| DELETE | `/api/users/me` | 회원 탈퇴 | JWT |
+| GET | `/api/stories` | 동화 목록 | |
+| GET | `/api/stories/:id` | 동화 상세 | |
+| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어) | 구독 |
+| GET | `/api/progress` | 진행률 목록 | JWT |
+| GET | `/api/progress/:storyId` | 동화 진행률 조회 | JWT |
+| PUT | `/api/progress/:storyId` | 동화 진행률 저장 | JWT |
+| GET | `/api/subscriptions/plans` | 구독 플랜 | |
+| GET | `/api/subscriptions/me` | 내 구독 정보 | JWT |
+| POST | `/api/subscriptions` | 구독 시작 | JWT |
+| DELETE | `/api/subscriptions/me` | 구독 해지 | JWT |
+| POST | `/api/webhooks/toss` | 토스 웹훅 | Secret |
 
 ## 스크립트
 
@@ -100,7 +114,8 @@ pnpm run start:dev    # 개발 서버
 pnpm run build        # 빌드
 pnpm run start:prod   # 프로덕션 실행
 pnpm run lint         # 린트
-pnpm run test         # 테스트
+pnpm run test         # 유닛 테스트
+pnpm run test:e2e     # E2E 테스트
 ```
 
 ## 프로젝트 구조
@@ -112,6 +127,7 @@ src/
 ├── common/           # 공통 (Guards, Filters, Decorators)
 ├── config/           # 환경설정
 ├── supabase/         # Supabase 클라이언트
+├── types/            # Database 타입 정의
 ├── user/             # 사용자 모듈
 ├── story/            # 동화 모듈
 ├── progress/         # 진행률 모듈
