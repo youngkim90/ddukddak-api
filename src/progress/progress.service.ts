@@ -1,7 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
+import { Tables } from '../types/database.types';
 import { ProgressResponseDto, ProgressListResponseDto, UpdateProgressDto } from './dto';
+
+type ProgressWithStory = Tables<'reading_progress'> & {
+  stories: Pick<Tables<'stories'>, 'title_ko' | 'page_count'> | null;
+};
 
 @Injectable()
 export class ProgressService {
@@ -105,16 +110,14 @@ export class ProgressService {
     return this.mapToResponse(data);
   }
 
-  private mapToResponse(data: Record<string, unknown>): ProgressResponseDto {
-    const stories = data.stories as Record<string, unknown> | null;
-
+  private mapToResponse(data: ProgressWithStory): ProgressResponseDto {
     return {
-      storyId: data.story_id as string,
-      storyTitle: (stories?.title_ko as string) ?? '',
-      currentPage: data.current_page as number,
-      totalPages: (stories?.page_count as number) ?? 0,
-      isCompleted: data.is_completed as boolean,
-      lastReadAt: data.last_read_at as string,
+      storyId: data.story_id,
+      storyTitle: data.stories?.title_ko ?? '',
+      currentPage: data.current_page,
+      totalPages: data.stories?.page_count ?? 0,
+      isCompleted: data.is_completed,
+      lastReadAt: data.last_read_at ?? '',
     };
   }
 }

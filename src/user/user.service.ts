@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
+import { Tables } from '../types/database.types';
 import { UpdateUserDto, UserResponseDto } from './dto';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class UserService {
       .from('users')
       .upsert({
         id: user.id,
-        email: user.email,
+        email: user.email ?? '',
         nickname: updateUserDto.nickname,
         avatar_url: updateUserDto.avatarUrl,
         updated_at: new Date().toISOString(),
@@ -56,14 +57,14 @@ export class UserService {
     }
   }
 
-  private mapToResponse(data: Record<string, unknown>): UserResponseDto {
+  private mapToResponse(data: Tables<'users'>): UserResponseDto {
     return {
-      id: data.id as string,
-      email: data.email as string,
-      nickname: data.nickname as string | undefined,
-      avatarUrl: data.avatar_url as string | undefined,
-      provider: data.provider as string,
-      createdAt: data.created_at as string,
+      id: data.id,
+      email: data.email,
+      nickname: data.nickname ?? undefined,
+      avatarUrl: data.avatar_url ?? undefined,
+      provider: data.provider ?? 'email',
+      createdAt: data.created_at,
     };
   }
 

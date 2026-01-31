@@ -280,6 +280,7 @@ pnpm run test:e2e     # E2E 테스트
 |------|------|
 | 프로젝트 | `../ddukddak-web/` |
 | 프레임워크 | Next.js 16 + TypeScript |
+| **Production URL** | https://ddukddak.expo.app |
 | 상태 | Phase 2 API 연동 완료 ✅ |
 | Auth | Supabase Auth (프론트에서 직접 연동) |
 | API 호출 | axios + TanStack Query |
@@ -373,6 +374,7 @@ pnpm run test:e2e     # E2E 테스트
 - [x] 공통 모듈 구조 (decorators, guards)
 - [x] Docker 설정 (Dockerfile, .dockerignore)
 - [x] CI/CD 설정 (GitHub Actions)
+- [x] Supabase Database 타입 안전성 (`src/types/database.types.ts`)
 
 ---
 
@@ -416,16 +418,16 @@ fairytale/
 | **Production URL** | https://ddukddak-api-2lb4yqjazq-du.a.run.app |
 | **Health Check** | /api/health |
 | **Region** | asia-northeast3 (서울) |
-| **CI/CD** | GitHub Actions (main 브랜치 push 시 자동 배포) |
+| **CI/CD** | GitHub Actions (main 브랜치 PR 머지 시 자동 배포) |
 
 ## 다음 작업 (Phase 3)
 
 | 작업 | 담당 | 상태 |
 |------|------|------|
 | 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 |
-| 프론트엔드 프로덕션 배포 | 프롱 | ⏳ 대기 |
-| CORS 설정 (프로덕션 URL) | 코난 | ⏳ 대기 |
+| 프론트엔드 프로덕션 배포 | 프롱 | ✅ 완료 |
+| CORS 설정 (프로덕션 URL) | 코난 | ✅ 완료 |
 
 ---
 
-*마지막 업데이트: 2026-01-29*
+*마지막 업데이트: 2026-01-31*

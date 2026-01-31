@@ -66,7 +66,7 @@ export class SubscriptionGuard implements CanActivate {
     }
 
     // Check if subscription is not expired
-    const expiresAt = new Date(data.expires_at as string);
+    const expiresAt = new Date(data.expires_at ?? new Date());
     return expiresAt > new Date();
   }
 
@@ -82,6 +82,6 @@ export class SubscriptionGuard implements CanActivate {
       return false;
     }
 
-    return data.is_free as boolean;
+    return data.is_free;
   }
 }
