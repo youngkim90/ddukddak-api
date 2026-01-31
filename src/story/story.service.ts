@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+import { Tables } from '../types/database.types';
 import {
   StoryResponseDto,
   StoryListResponseDto,
@@ -100,37 +101,37 @@ export class StoryService {
     };
   }
 
-  private mapToResponse(data: Record<string, unknown>, includeCreatedAt = false): StoryResponseDto {
+  private mapToResponse(data: Tables<'stories'>, includeCreatedAt = false): StoryResponseDto {
     const response: StoryResponseDto = {
-      id: data.id as string,
-      titleKo: data.title_ko as string,
-      titleEn: data.title_en as string,
-      descriptionKo: data.description_ko as string,
-      descriptionEn: data.description_en as string,
-      thumbnailUrl: data.thumbnail_url as string,
-      category: data.category as StoryResponseDto['category'],
-      ageGroup: data.age_group as StoryResponseDto['ageGroup'],
-      durationMinutes: data.duration_minutes as number,
-      pageCount: data.page_count as number,
-      isFree: data.is_free as boolean,
+      id: data.id,
+      titleKo: data.title_ko,
+      titleEn: data.title_en ?? '',
+      descriptionKo: data.description_ko ?? '',
+      descriptionEn: data.description_en ?? '',
+      thumbnailUrl: data.thumbnail_url ?? '',
+      category: (data.category ?? 'adventure') as StoryResponseDto['category'],
+      ageGroup: (data.age_group ?? '3-5') as StoryResponseDto['ageGroup'],
+      durationMinutes: data.duration_minutes ?? 0,
+      pageCount: data.page_count ?? 0,
+      isFree: data.is_free,
     };
 
     if (includeCreatedAt) {
-      response.createdAt = data.created_at as string;
+      response.createdAt = data.created_at;
     }
 
     return response;
   }
 
-  private mapPageToResponse(data: Record<string, unknown>): StoryPageDto {
+  private mapPageToResponse(data: Tables<'story_pages'>): StoryPageDto {
     return {
-      id: data.id as string,
-      pageNumber: data.page_number as number,
-      imageUrl: data.image_url as string,
-      textKo: data.text_ko as string,
-      textEn: data.text_en as string,
-      audioUrlKo: data.audio_url_ko as string | undefined,
-      audioUrlEn: data.audio_url_en as string | undefined,
+      id: data.id,
+      pageNumber: data.page_number,
+      imageUrl: data.image_url ?? '',
+      textKo: data.text_ko ?? '',
+      textEn: data.text_en ?? '',
+      audioUrlKo: data.audio_url_ko ?? undefined,
+      audioUrlEn: data.audio_url_en ?? undefined,
     };
   }
 }

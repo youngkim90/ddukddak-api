@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
 import { TossService } from './toss.service';
+import { Tables } from '../types/database.types';
 import {
   SubscriptionResponseDto,
   SubscriptionPlansResponseDto,
@@ -167,7 +168,8 @@ export class SubscriptionService {
       return; // 갱신할 구독 없음
     }
 
-    const plan = SUBSCRIPTION_PLANS[subscription.plan_type as keyof typeof SUBSCRIPTION_PLANS];
+    const planType = subscription.plan_type as keyof typeof SUBSCRIPTION_PLANS;
+    const plan = SUBSCRIPTION_PLANS[planType];
     if (!plan) return;
 
     // 빌링 실행
@@ -176,7 +178,7 @@ export class SubscriptionService {
 
     try {
       await this.tossService.requestBilling(
-        subscription.toss_billing_key as string,
+        subscription.toss_billing_key ?? '',
         userId,
         plan.price,
         orderId,
@@ -184,7 +186,7 @@ export class SubscriptionService {
       );
 
       // 만료일 연장
-      const newExpiresAt = new Date(subscription.expires_at as string);
+      const newExpiresAt = new Date(subscription.expires_at ?? new Date());
       newExpiresAt.setDate(newExpiresAt.getDate() + plan.durationDays);
 
       await this.supabaseService
@@ -207,14 +209,14 @@ export class SubscriptionService {
     }
   }
 
-  private mapToResponse(data: Record<string, unknown>): SubscriptionResponseDto {
+  private mapToResponse(data: Tables<'subscriptions'>): SubscriptionResponseDto {
     return {
-      id: data.id as string,
+      id: data.id,
       planType: data.plan_type as 'monthly' | 'yearly',
       status: data.status as 'active' | 'cancelled' | 'expired',
-      startedAt: data.started_at as string,
-      expiresAt: data.expires_at as string,
-      autoRenew: data.auto_renew as boolean,
+      startedAt: data.started_at ?? '',
+      expiresAt: data.expires_at ?? '',
+      autoRenew: data.auto_renew,
     };
   }
 }

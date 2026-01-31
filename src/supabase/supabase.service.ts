@@ -1,11 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Database } from '../types/database.types';
 
 @Injectable()
 export class SupabaseService implements OnModuleInit {
-  private client: SupabaseClient;
-  private adminClient: SupabaseClient;
+  private client: SupabaseClient<Database>;
+  private adminClient: SupabaseClient<Database>;
 
   constructor(private configService: ConfigService) {
     const supabaseUrl = this.configService.getOrThrow<string>('supabase.url');
@@ -13,10 +14,10 @@ export class SupabaseService implements OnModuleInit {
     const supabaseServiceRoleKey = this.configService.getOrThrow<string>('supabase.serviceRoleKey');
 
     // Public client (respects RLS)
-    this.client = createClient(supabaseUrl, supabaseAnonKey);
+    this.client = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
     // Admin client (bypasses RLS - use carefully)
-    this.adminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    this.adminClient = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
@@ -28,11 +29,11 @@ export class SupabaseService implements OnModuleInit {
     // Supabase client initialized
   }
 
-  getClient(): SupabaseClient {
+  getClient(): SupabaseClient<Database> {
     return this.client;
   }
 
-  getAdminClient(): SupabaseClient {
+  getAdminClient(): SupabaseClient<Database> {
     return this.adminClient;
   }
 }
