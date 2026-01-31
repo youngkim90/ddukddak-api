@@ -43,6 +43,7 @@ export interface Database {
           is_free: boolean;
           page_count: number | null;
           duration_minutes: number | null;
+          bgm_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -57,6 +58,7 @@ export interface Database {
           is_free?: boolean;
           page_count?: number | null;
           duration_minutes?: number | null;
+          bgm_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -71,6 +73,7 @@ export interface Database {
           is_free?: boolean;
           page_count?: number | null;
           duration_minutes?: number | null;
+          bgm_url?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -85,6 +88,7 @@ export interface Database {
           text_en: string | null;
           audio_url_ko: string | null;
           audio_url_en: string | null;
+          lottie_url: string | null;
         };
         Insert: {
           id?: string;
@@ -95,6 +99,7 @@ export interface Database {
           text_en?: string | null;
           audio_url_ko?: string | null;
           audio_url_en?: string | null;
+          lottie_url?: string | null;
         };
         Update: {
           id?: string;
@@ -105,6 +110,7 @@ export interface Database {
           text_en?: string | null;
           audio_url_ko?: string | null;
           audio_url_en?: string | null;
+          lottie_url?: string | null;
         };
         Relationships: [
           {

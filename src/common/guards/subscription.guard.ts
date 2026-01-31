@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../../supabase/supabase.service';
@@ -10,6 +11,7 @@ export class SubscriptionGuard implements CanActivate {
   constructor(
     private supabaseService: SupabaseService,
     private reflector: Reflector,
+    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,6 +22,12 @@ export class SubscriptionGuard implements CanActivate {
 
     // If @RequireSubscription() is not applied, allow access
     if (!requireSubscription) {
+      return true;
+    }
+
+    // MVP 무료 모드: 구독 체크를 스킵하고 전체 허용
+    const enableFreeMode = this.configService.get<boolean>('enableFreeMode', true);
+    if (enableFreeMode) {
       return true;
     }
 
