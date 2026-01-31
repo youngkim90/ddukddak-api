@@ -44,30 +44,8 @@
 
 ### Supabase 타입 사용 규칙
 
-- Supabase 쿼리 결과는 반드시 `src/types/database.types.ts`의 타입을 사용할 것
-- `Record<string, unknown>` 또는 `as` 타입 캐스팅 **금지**
-- 서비스에서 사용하는 타입 패턴:
-
-```typescript
-// ✅ 올바른 사용
-import { Tables } from '../types/database.types';
-
-private mapToResponse(data: Tables<'stories'>): StoryResponseDto {
-  return { id: data.id, titleKo: data.title_ko };
-}
-
-// ✅ Join 결과
-type ProgressWithStory = Tables<'reading_progress'> & {
-  stories: Pick<Tables<'stories'>, 'title_ko' | 'page_count'> | null;
-};
-
-// ❌ 금지
-private mapToResponse(data: Record<string, unknown>): StoryResponseDto {
-  return { id: data.id as string };
-}
-```
-
-- nullable 필드는 `?? ''`, `?? 0`, `?? undefined` 등 null coalescing 사용
+- Supabase 쿼리 결과는 가급적 `src/types/database.types.ts`의 `Tables<T>` 타입을 사용할 것
+- `Record<string, unknown>`이나 `as` 타입 캐스팅보다 null coalescing(`??`) 우선 사용
 - 테이블 추가/변경 시 `database.types.ts`도 함께 업데이트할 것
 
 ---
