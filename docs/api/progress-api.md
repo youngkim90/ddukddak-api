@@ -16,21 +16,28 @@
 
 ## GET /api/progress — 전체 진행률 목록
 
-사용자의 모든 읽기 진행률을 `stories` 테이블과 JOIN하여 동화 제목, 전체 페이지 수와 함께 반환합니다.
+사용자의 모든 읽기 진행률을 동화 제목, 전체 페이지 수와 함께 반환합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/progress<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[ProgressController.findAll]
-    C --> D[ProgressService.findAll]
-    D --> E["Admin Client<br/>SELECT rp.*, s.title_ko, s.page_count<br/>FROM reading_progress rp<br/>LEFT JOIN stories s ON rp.story_id = s.id<br/>WHERE rp.user_id = user.id<br/>ORDER BY rp.last_read_at DESC"]
-    E --> F["응답 매핑<br/>storyTitle, totalPages 포함"]
-    F --> G["200 OK<br/>ProgressListResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C[진행률 목록 조회]
+    C --> D[200 OK - 진행률 + 동화 정보]
 
     style A fill:#2196f3,color:#fff
-    style G fill:#4caf50,color:#fff
+    style D fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[ProgressController.findAll] --> B[ProgressService.findAll]
+    B --> C[SupabaseAdmin → reading_progress + stories JOIN 조회]
+    C --> D[last_read_at 기준 내림차순 정렬]
+    D --> E[ProgressListResponseDto 반환]
 ```
 
 ### 요청
@@ -62,21 +69,29 @@ flowchart TD
 
 특정 동화에 대한 진행률을 조회합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/progress/:storyId<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[ProgressController.findOne]
-    C --> D[ProgressService.findOne]
-    D --> E["Admin Client<br/>SELECT rp.*, s.title_ko, s.page_count<br/>FROM reading_progress rp<br/>LEFT JOIN stories s ON rp.story_id = s.id<br/>WHERE rp.user_id = user.id<br/>AND rp.story_id = :storyId"]
-    E --> F{진행률 존재?}
-    F -- Yes --> G["200 OK<br/>ProgressResponseDto"]
-    F -- No --> H["404 Not Found"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C{진행률 존재?}
+    C -- Yes --> D[200 OK]
+    C -- No --> E[404 Not Found]
 
     style A fill:#2196f3,color:#fff
-    style G fill:#4caf50,color:#fff
-    style H fill:#f44336,color:#fff
+    style D fill:#4caf50,color:#fff
+    style E fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[ProgressController.findOne] --> B[ProgressService.findOne]
+    B --> C[SupabaseAdmin → reading_progress + stories JOIN 조회]
+    C --> D{데이터 존재?}
+    D -- Yes --> E[ProgressResponseDto 반환]
+    D -- No --> F[NotFoundException throw]
 ```
 
 ### 요청
@@ -102,28 +117,36 @@ flowchart TD
 
 ## PUT /api/progress/:storyId — 진행률 저장
 
-진행률을 저장합니다. `(user_id, story_id)` 유니크 제약조건에 의해, 기존 레코드가 있으면 업데이트하고 없으면 새로 생성합니다 (upsert).
+진행률을 저장합니다. 기존 레코드가 있으면 업데이트하고 없으면 새로 생성합니다 (upsert).
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"PUT /api/progress/:storyId<br/>Authorization: Bearer token<br/>Body: UpdateProgressDto"| B[JwtAuthGuard]
-    B --> C["ValidationPipe<br/>currentPage, isCompleted 검증"]
-    C --> D[ProgressController.upsert]
-    D --> E[ProgressService.upsert]
-    E --> F["1. 동화 존재 확인<br/>SELECT id, title_ko, page_count<br/>FROM stories WHERE id = :storyId"]
-    F --> G{동화 존재?}
-    G -- No --> H["404 Not Found"]
-    G -- Yes --> I["2. Admin Client<br/>UPSERT INTO reading_progress<br/>(user_id, story_id, current_page,<br/>is_completed, last_read_at)<br/>ON CONFLICT (user_id, story_id)<br/>DO UPDATE"]
-    I --> J{Supabase 에러?}
-    J -- Yes --> K["500 Internal Server Error"]
-    J -- No --> L["200 OK<br/>ProgressResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C[입력값 검증]
+    C --> D{동화 존재?}
+    D -- No --> E[404 Not Found]
+    D -- Yes --> F[진행률 저장]
+    F --> G{성공?}
+    G -- Yes --> H[200 OK]
+    G -- No --> I[500 Error]
 
     style A fill:#2196f3,color:#fff
-    style H fill:#f44336,color:#fff
-    style K fill:#f44336,color:#fff
-    style L fill:#4caf50,color:#fff
+    style E fill:#f44336,color:#fff
+    style H fill:#4caf50,color:#fff
+    style I fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[ProgressController.upsert] --> B[ValidationPipe — UpdateProgressDto 검증]
+    B --> C[ProgressService.upsert]
+    C --> D[SupabaseAdmin → stories 존재 확인]
+    D --> E["SupabaseAdmin → reading_progress upsert<br/>(user_id, story_id 유니크 제약)"]
+    E --> F[ProgressResponseDto 반환]
 ```
 
 ### 요청

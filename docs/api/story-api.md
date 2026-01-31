@@ -18,28 +18,29 @@
 
 카테고리, 연령대 필터와 페이지네이션을 지원합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/stories?category=adventure&page=1&limit=10"| B["@Public — JwtAuthGuard 스킵"]
-    B --> C["ValidationPipe<br/>StoryQueryDto 검증/변환"]
-    C --> D[StoryController.findAll]
-    D --> E[StoryService.findAll]
-    E --> F{category 필터?}
-    F -- Yes --> G["쿼리에 .eq('category', value) 추가"]
-    F -- No --> G2[필터 없이 진행]
-    G --> H{ageGroup 필터?}
-    G2 --> H
-    H -- Yes --> I["쿼리에 .eq('age_group', value) 추가"]
-    H -- No --> I2[필터 없이 진행]
-    I --> J["Public Client<br/>SELECT *, count<br/>FROM stories<br/>ORDER BY created_at DESC<br/>RANGE(offset, offset+limit-1)"]
-    I2 --> J
-    J --> K[페이지네이션 계산<br/>totalPages, hasNext, hasPrev]
-    K --> L["200 OK<br/>StoryListResponseDto"]
+    A[Client 요청] --> B[공개 API - 인증 불필요]
+    B --> C[쿼리 파라미터 검증]
+    C --> D[필터 + 페이지네이션 적용]
+    D --> E[200 OK - 목록 + 페이지 정보]
 
     style A fill:#2196f3,color:#fff
-    style L fill:#4caf50,color:#fff
+    style E fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[StoryController.findAll] --> B[ValidationPipe — StoryQueryDto 검증]
+    B --> C[StoryService.findAll]
+    C --> D[SupabasePublic → stories 테이블 조회]
+    D --> E[카테고리/연령대 필터 적용]
+    E --> F[페이지네이션 계산]
+    F --> G[StoryListResponseDto 반환]
 ```
 
 ### 요청
@@ -92,21 +93,29 @@ flowchart TD
 
 단일 동화의 상세 정보를 조회합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/stories/:id"| B["@Public — JwtAuthGuard 스킵"]
-    B --> C[StoryController.findOne]
-    C --> D[StoryService.findOne]
-    D --> E["Public Client<br/>SELECT * FROM stories<br/>WHERE id = :id"]
-    E --> F{동화 존재?}
-    F -- Yes --> G["200 OK<br/>StoryResponseDto"]
-    F -- No --> H["404 Not Found"]
+    A[Client 요청] --> B[공개 API - 인증 불필요]
+    B --> C{동화 존재?}
+    C -- Yes --> D[200 OK]
+    C -- No --> E[404 Not Found]
 
     style A fill:#2196f3,color:#fff
-    style G fill:#4caf50,color:#fff
-    style H fill:#f44336,color:#fff
+    style D fill:#4caf50,color:#fff
+    style E fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[StoryController.findOne] --> B[StoryService.findOne]
+    B --> C[SupabasePublic → stories 테이블 조회]
+    C --> D{데이터 존재?}
+    D -- Yes --> E[StoryResponseDto 반환]
+    D -- No --> F[NotFoundException throw]
 ```
 
 ### 요청
@@ -138,28 +147,35 @@ flowchart TD
 
 ## GET /api/stories/:id/pages — 동화 페이지 조회
 
-동화 뷰어용 페이지 데이터를 조회합니다. JWT 인증과 구독 검증(`@RequireSubscription`)이 필요합니다. 무료 동화(`is_free = true`)는 구독 없이도 접근 가능합니다.
+동화 뷰어용 페이지 데이터를 조회합니다. JWT 인증과 구독 검증이 필요하며, 무료 동화는 구독 없이도 접근 가능합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/stories/:id/pages<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C["SubscriptionGuard<br/>(@RequireSubscription)"]
-    C --> D{활성 구독 또는<br/>무료 동화?}
-    D -- No --> E["403 Forbidden<br/>'Active subscription required<br/>to access this content'"]
-    D -- Yes --> F[StoryController.findPages]
-    F --> G[StoryService.findPages]
-    G --> H["Public Client<br/>SELECT id FROM stories<br/>WHERE id = :id"]
-    H --> I{동화 존재?}
-    I -- No --> J["404 Not Found"]
-    I -- Yes --> K["Public Client<br/>SELECT * FROM story_pages<br/>WHERE story_id = :id<br/>ORDER BY page_number ASC"]
-    K --> L["200 OK<br/>StoryPagesResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C{활성 구독 또는 무료 동화?}
+    C -- No --> D[403 Forbidden]
+    C -- Yes --> E{동화 존재?}
+    E -- No --> F[404 Not Found]
+    E -- Yes --> G[200 OK - 페이지 목록]
 
     style A fill:#2196f3,color:#fff
-    style E fill:#f44336,color:#fff
-    style J fill:#f44336,color:#fff
-    style L fill:#4caf50,color:#fff
+    style D fill:#f44336,color:#fff
+    style F fill:#f44336,color:#fff
+    style G fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[JwtAuthGuard] --> B[SubscriptionGuard — 구독/무료 확인]
+    B --> C[StoryController.findPages]
+    C --> D[StoryService.findPages]
+    D --> E[SupabasePublic → stories 존재 확인]
+    E --> F[SupabasePublic → story_pages 조회]
+    F --> G[StoryPagesResponseDto 반환]
 ```
 
 ### 요청

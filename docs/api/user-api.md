@@ -18,22 +18,32 @@
 
 JWT 인증 사용자의 프로필을 조회합니다. `users` 테이블에 레코드가 없으면 Supabase Auth 메타데이터에서 기본 정보를 반환합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/users/me<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[UserController.getProfile]
-    C --> D[UserService.getProfile]
-    D --> E["Admin Client<br/>SELECT * FROM users<br/>WHERE id = user.id"]
-    E --> F{users 레코드 존재?}
-    F -- Yes --> G[DB 데이터로 응답 매핑]
-    F -- No --> H["Supabase Auth 메타데이터<br/>(user_metadata, app_metadata)<br/>에서 기본 정보 추출"]
-    H --> G
-    G --> I["200 OK<br/>UserResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C{프로필 존재?}
+    C -- Yes --> D[DB 프로필 반환]
+    C -- No --> E[Auth 기본 정보 반환]
+    D --> F[200 OK]
+    E --> F
 
     style A fill:#2196f3,color:#fff
-    style I fill:#4caf50,color:#fff
+    style F fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[UserController.getProfile] --> B[UserService.getProfile]
+    B --> C[SupabaseAdmin → users 테이블 조회]
+    C --> D{데이터 존재?}
+    D -- Yes --> E[DB 레코드 매핑]
+    D -- No --> F[Supabase Auth user_metadata 매핑]
+    E --> G[UserResponseDto 반환]
+    F --> G
 ```
 
 ### 요청
@@ -61,23 +71,30 @@ flowchart TD
 
 프로필 정보를 수정합니다. `users` 테이블에 레코드가 없으면 자동으로 생성됩니다 (upsert).
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"PATCH /api/users/me<br/>Authorization: Bearer token<br/>Body: UpdateUserDto"| B[JwtAuthGuard]
-    B --> C[ValidationPipe<br/>nickname, avatarUrl 검증]
-    C --> D[UserController.updateProfile]
-    D --> E[UserService.updateProfile]
-    E --> F["Admin Client<br/>UPSERT INTO users<br/>(id, email, nickname, avatar_url, updated_at)<br/>ON CONFLICT (id) DO UPDATE"]
-    F --> G{Supabase 에러?}
-    G -- Yes --> H["500 Internal Server Error<br/>'Failed to update profile'"]
-    G -- No --> I[업데이트된 데이터로 응답 매핑]
-    I --> J["200 OK<br/>UserResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C[입력값 검증]
+    C --> D[프로필 저장]
+    D --> E{성공?}
+    E -- Yes --> F[200 OK]
+    E -- No --> G[500 Error]
 
     style A fill:#2196f3,color:#fff
-    style H fill:#f44336,color:#fff
-    style J fill:#4caf50,color:#fff
+    style F fill:#4caf50,color:#fff
+    style G fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[UserController.updateProfile] --> B[ValidationPipe — UpdateUserDto 검증]
+    B --> C[UserService.updateProfile]
+    C --> D[SupabaseAdmin → users 테이블 upsert]
+    D --> E[UserResponseDto 반환]
 ```
 
 ### 요청
@@ -117,22 +134,29 @@ flowchart TD
 
 `users` 테이블 레코드 삭제 후, Supabase Auth에서도 사용자를 삭제합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"DELETE /api/users/me<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[UserController.deleteAccount]
-    C --> D[UserService.deleteAccount]
-    D --> E["1. Admin Client<br/>DELETE FROM users<br/>WHERE id = user.id"]
-    E --> F["2. Supabase Auth<br/>auth.admin.deleteUser(user.id)"]
-    F --> G{Auth 삭제 성공?}
-    G -- Yes --> H["204 No Content"]
-    G -- No --> I["500 Internal Server Error<br/>'Failed to delete account'"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C[계정 삭제 처리]
+    C --> D{성공?}
+    D -- Yes --> E[204 No Content]
+    D -- No --> F[500 Error]
 
     style A fill:#2196f3,color:#fff
-    style H fill:#4caf50,color:#fff
-    style I fill:#f44336,color:#fff
+    style E fill:#4caf50,color:#fff
+    style F fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[UserController.deleteAccount] --> B[UserService.deleteAccount]
+    B --> C[SupabaseAdmin → users 테이블 삭제]
+    C --> D[Supabase Auth → admin.deleteUser 호출]
+    D --> E[204 No Content]
 ```
 
 ### 요청

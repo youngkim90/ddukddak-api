@@ -19,18 +19,25 @@
 
 하드코딩된 구독 플랜 정보를 반환합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/subscriptions/plans"| B["@Public — JwtAuthGuard 스킵"]
-    B --> C[SubscriptionController.getPlans]
-    C --> D[SubscriptionService.getPlans]
-    D --> E["하드코딩된 SUBSCRIPTION_PLANS 반환"]
-    E --> F["200 OK<br/>SubscriptionPlansResponseDto"]
+    A[Client 요청] --> B[공개 API - 인증 불필요]
+    B --> C[플랜 목록 반환]
+    C --> D[200 OK]
 
     style A fill:#2196f3,color:#fff
-    style F fill:#4caf50,color:#fff
+    style D fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[SubscriptionController.getPlans] --> B[SubscriptionService.getPlans]
+    B --> C[하드코딩된 SUBSCRIPTION_PLANS 반환]
+    C --> D[SubscriptionPlansResponseDto 반환]
 ```
 
 ### 요청
@@ -68,21 +75,29 @@ flowchart TD
 
 현재 사용자의 가장 최근 구독 정보를 조회합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"GET /api/subscriptions/me<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[SubscriptionController.getMySubscription]
-    C --> D[SubscriptionService.getMySubscription]
-    D --> E["Admin Client<br/>SELECT * FROM subscriptions<br/>WHERE user_id = user.id<br/>ORDER BY created_at DESC<br/>LIMIT 1"]
-    E --> F{구독 레코드 존재?}
-    F -- Yes --> G["200 OK<br/>SubscriptionResponseDto"]
-    F -- No --> H["200 OK<br/>{ subscription: null }"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C{구독 존재?}
+    C -- Yes --> D[200 OK - 구독 정보]
+    C -- No --> E["200 OK - { subscription: null }"]
 
     style A fill:#2196f3,color:#fff
-    style G fill:#4caf50,color:#fff
-    style H fill:#4caf50,color:#fff
+    style D fill:#4caf50,color:#fff
+    style E fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[SubscriptionController.getMySubscription] --> B[SubscriptionService.getMySubscription]
+    B --> C[SupabaseAdmin → subscriptions 테이블 조회]
+    C --> D{데이터 존재?}
+    D -- Yes --> E[SubscriptionResponseDto 반환]
+    D -- No --> F[null 반환]
 ```
 
 ### 요청
@@ -110,30 +125,40 @@ flowchart TD
 
 빌링키로 토스페이먼츠 결제를 진행하고, 구독 레코드를 생성합니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"POST /api/subscriptions<br/>Authorization: Bearer token<br/>Body: CreateSubscriptionDto"| B[JwtAuthGuard]
-    B --> C["ValidationPipe<br/>planType, billingKey 검증"]
-    C --> D[SubscriptionController.createSubscription]
-    D --> E[SubscriptionService.createSubscription]
-    E --> F["1. 기존 활성 구독 확인<br/>getMySubscription(user)"]
-    F --> G{활성 구독 존재?}
-    G -- Yes --> H["409 Conflict<br/>'Already has an active subscription'"]
-    G -- No --> I{플랜 존재?<br/>SUBSCRIPTION_PLANS에서 확인}
-    I -- No --> J["404 Not Found"]
-    I -- Yes --> K["2. TossService.requestBilling()<br/>POST /billing/{billingKey}"]
-    K --> L{결제 성공?}
-    L -- No --> M["500 Error<br/>결제 실패"]
-    L -- Yes --> N["3. 구독 레코드 생성<br/>INSERT INTO subscriptions<br/>(user_id, plan_type, status='active',<br/>started_at, expires_at,<br/>auto_renew=true, toss_billing_key)"]
-    N --> O["201 Created<br/>SubscriptionResponseDto"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C[입력값 검증]
+    C --> D{기존 활성 구독?}
+    D -- Yes --> E[409 Conflict]
+    D -- No --> F{플랜 존재?}
+    F -- No --> G[404 Not Found]
+    F -- Yes --> H[토스 결제 요청]
+    H --> I{결제 성공?}
+    I -- No --> J[500 Error]
+    I -- Yes --> K[구독 생성]
+    K --> L[201 Created]
 
     style A fill:#2196f3,color:#fff
-    style H fill:#f44336,color:#fff
+    style E fill:#f44336,color:#fff
+    style G fill:#f44336,color:#fff
     style J fill:#f44336,color:#fff
-    style M fill:#f44336,color:#fff
-    style O fill:#4caf50,color:#fff
+    style L fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[SubscriptionController.createSubscription] --> B[ValidationPipe — CreateSubscriptionDto 검증]
+    B --> C[SubscriptionService.createSubscription]
+    C --> D[기존 활성 구독 확인]
+    D --> E[SUBSCRIPTION_PLANS에서 플랜 검증]
+    E --> F[TossService.requestBilling — 빌링키 결제]
+    F --> G[SupabaseAdmin → subscriptions 레코드 생성]
+    G --> H[SubscriptionResponseDto 반환]
 ```
 
 ### 요청
@@ -167,48 +192,39 @@ flowchart TD
 }
 ```
 
-### 토스페이먼츠 결제 요청 상세
-
-```mermaid
-flowchart TD
-    A[SubscriptionService] --> B["TossService.requestBilling()"]
-    B --> C["POST https://api.tosspayments.com/v1/billing/{billingKey}"]
-    C --> D["Headers:<br/>Authorization: Basic base64(secretKey:)<br/>Content-Type: application/json"]
-    D --> E["Body:<br/>customerKey: user.id<br/>amount: plan.price<br/>orderId: sub_{userId}_{timestamp}<br/>orderName: '뚝딱동화 {planName}'"]
-    E --> F{응답 성공?}
-    F -- Yes --> G[TossPaymentResponse 반환]
-    F -- No --> H[Error throw]
-
-    style A fill:#2196f3,color:#fff
-    style G fill:#4caf50,color:#fff
-    style H fill:#f44336,color:#fff
-```
-
 ---
 
 ## DELETE /api/subscriptions/me — 구독 해지
 
 활성 구독의 상태를 `cancelled`로 변경하고 자동 갱신을 비활성화합니다. 구독은 만료일까지 유지됩니다.
 
-### Flowchart
+### API 흐름
 
 ```mermaid
 flowchart TD
-    A[Client] -->|"DELETE /api/subscriptions/me<br/>Authorization: Bearer token"| B[JwtAuthGuard]
-    B --> C[SubscriptionController.cancelSubscription]
-    C --> D[SubscriptionService.cancelSubscription]
-    D --> E["1. 구독 조회<br/>getMySubscription(user)"]
-    E --> F{구독 존재?}
-    F -- No --> G["404 Not Found"]
-    F -- Yes --> H{status = 'active'?}
-    H -- No --> I["409 Conflict<br/>'구독이 활성 상태가 아님'"]
-    H -- Yes --> J["2. Admin Client<br/>UPDATE subscriptions<br/>SET status = 'cancelled',<br/>auto_renew = false<br/>WHERE id = subscription.id"]
-    J --> K["204 No Content"]
+    A[Client 요청] --> B[JWT 인증]
+    B --> C{구독 존재?}
+    C -- No --> D[404 Not Found]
+    C -- Yes --> E{활성 상태?}
+    E -- No --> F[409 Conflict]
+    E -- Yes --> G[구독 해지 처리]
+    G --> H[204 No Content]
 
     style A fill:#2196f3,color:#fff
-    style G fill:#f44336,color:#fff
-    style I fill:#f44336,color:#fff
-    style K fill:#4caf50,color:#fff
+    style D fill:#f44336,color:#fff
+    style F fill:#f44336,color:#fff
+    style H fill:#4caf50,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[SubscriptionController.cancelSubscription] --> B[SubscriptionService.cancelSubscription]
+    B --> C[구독 조회 — getMySubscription]
+    C --> D[상태 검증 — active 확인]
+    D --> E["SupabaseAdmin → subscriptions 업데이트<br/>(status=cancelled, auto_renew=false)"]
+    E --> F[204 No Content]
 ```
 
 ### 요청
@@ -227,20 +243,31 @@ flowchart TD
 
 웹훅에서 호출되는 자동 갱신 로직입니다. 직접 API로 노출되지 않습니다.
 
+### API 흐름
+
 ```mermaid
 flowchart TD
-    A["WebhookController<br/>(BILLING_STATUS_CHANGED)"] --> B[SubscriptionService.renewSubscription]
-    B --> C["Admin Client<br/>SELECT * FROM subscriptions<br/>WHERE user_id = ? AND status = 'active'<br/>AND auto_renew = true"]
-    C --> D{갱신 대상 존재?}
-    D -- No --> E[조용히 종료]
-    D -- Yes --> F["TossService.requestBilling()<br/>orderId: renew_{userId}_{timestamp}<br/>orderName: '뚝딱동화 {planName} 갱신'"]
-    F --> G{결제 성공?}
-    G -- Yes --> H["UPDATE subscriptions<br/>SET expires_at += durationDays"]
-    G -- No --> I["UPDATE subscriptions<br/>SET status = 'expired',<br/>auto_renew = false"]
+    A[웹훅 이벤트 수신] --> B{갱신 대상 존재?}
+    B -- No --> C[조용히 종료]
+    B -- Yes --> D[토스 재결제 요청]
+    D --> E{결제 성공?}
+    E -- Yes --> F[만료일 연장]
+    E -- No --> G[구독 만료 처리]
 
     style A fill:#ff9800,color:#fff
-    style H fill:#4caf50,color:#fff
-    style I fill:#f44336,color:#fff
+    style F fill:#4caf50,color:#fff
+    style G fill:#f44336,color:#fff
+```
+
+### 코드 흐름
+
+```mermaid
+flowchart TD
+    A[SubscriptionService.renewSubscription] --> B["SupabaseAdmin → 활성+자동갱신 구독 조회"]
+    B --> C[TossService.requestBilling — 빌링키 재결제]
+    C --> D{성공?}
+    D -- Yes --> E[expires_at 연장]
+    D -- No --> F["status=expired, auto_renew=false 업데이트"]
 ```
 
 ---
