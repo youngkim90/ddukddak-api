@@ -4,14 +4,14 @@
 
 ## 프로젝트 소개
 
-**뚝딱동화**는 AI로 생성된 동화를 어린이들에게 제공하는 서비스입니다. TTS 음성, 배경음악과 함께 한국어/영어 이중 언어를 지원하며, 부모와 아이가 함께 즐길 수 있는 동화 뷰어를 제공합니다.
+**뚝딱동화**는 AI로 생성된 동화를 어린이들에게 제공하는 서비스입니다. TTS 음성, AI 영상, 배경음악과 함께 한국어/영어 이중 언어를 지원하며, 부모와 아이가 함께 즐길 수 있는 동화 뷰어를 제공합니다.
 
 ### 주요 기능
 
 - 동화 목록 및 상세 조회 (카테고리/연령별 필터)
-- 동화 뷰어 (페이지 넘김, TTS, BGM)
+- 동화 뷰어 (페이지 넘김, TTS, AI 영상, BGM)
 - 읽기 진행률 저장 및 조회
-- 구독 결제 (토스페이먼츠 정기결제)
+- 구독 결제 (추후 RevenueCat 인앱결제 + 토스페이먼츠)
 - 사용자 프로필 관리
 
 ## 기술 스택
@@ -21,8 +21,8 @@
 | Framework | NestJS 11.x (TypeScript) |
 | Database | PostgreSQL (Supabase) |
 | Auth | Supabase Auth (JWT) |
-| Storage | Supabase Storage |
-| 결제 | 토스페이먼츠 |
+| Storage | Cloudflare R2 (이미지, 오디오, AI 영상) |
+| 결제 | 토스페이먼츠 (스켈레톤, 추후 연동) |
 | 배포 | Google Cloud Run |
 | CI/CD | GitHub Actions |
 
@@ -30,11 +30,11 @@
 
 ```mermaid
 flowchart LR
-    WEB["ddukddak-web<br/>(Next.js)"] -->|REST API| API["ddukddak-api<br/>(NestJS)"]
+    WEB["ddukddak-web<br/>(Expo)"] -->|REST API| API["ddukddak-api<br/>(NestJS)"]
     WEB -->|Auth| SUPABASE["Supabase"]
     API -->|JWT 검증| SUPABASE
-    API -->|DB/Storage| SUPABASE
-    API <-->|정기결제| TOSS["토스페이먼츠"]
+    API -->|CRUD| SUPABASE
+    API -->|R2 Public URL| R2["Cloudflare R2"]
 ```
 
 ## 배포 정보
@@ -71,7 +71,7 @@ pnpm run start:dev
 ### 환경 변수
 
 ```env
-PORT=3000
+PORT=4000
 NODE_ENV=development
 
 # Supabase
@@ -116,6 +116,7 @@ pnpm run start:prod   # 프로덕션 실행
 pnpm run lint         # 린트
 pnpm run test         # 유닛 테스트
 pnpm run test:e2e     # E2E 테스트
+pnpm run seed         # 동화 시드 데이터 등록
 ```
 
 ## 프로젝트 구조
@@ -137,7 +138,8 @@ src/
 
 ## 관련 프로젝트
 
-- [ddukddak-web](https://github.com/youngkim90/ddukddak-web) - 프론트엔드 (Next.js)
+- [ddukddak-web](https://github.com/youngkim90/ddukddak-web) - 프론트엔드 (Expo)
+- [ddukddak-story](https://github.com/youngkim90/ddukddak-story) - 콘텐츠 생성
 
 ## 라이선스
 

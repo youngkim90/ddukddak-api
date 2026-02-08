@@ -25,6 +25,9 @@ cclsp.json
 .serena/
 CLAUDE.local.md
 
+# Work reports (내부 전달용)
+docs/work-report/
+
 # Supabase local
 supabase/.temp/
 
