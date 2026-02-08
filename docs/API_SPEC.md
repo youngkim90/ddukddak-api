@@ -52,6 +52,8 @@ interface StoryPage {
   imageUrl: string;
   textKo: string;
   textEn: string;
+  mediaType: 'image' | 'video';
+  videoUrl?: string;
   audioUrlKo?: string;
   audioUrlEn?: string;
 }
@@ -197,6 +199,8 @@ interface Subscription {
       "imageUrl": "https://...",
       "textKo": "옛날 옛적에 아기돼지 삼형제가 살았어요.",
       "textEn": "Once upon a time, there were three little pigs.",
+      "mediaType": "image",
+      "videoUrl": null,
       "audioUrlKo": "https://...",
       "audioUrlEn": "https://..."
     }
@@ -253,18 +257,25 @@ interface Subscription {
 {
   "plans": [
     {
+      "id": "free",
+      "name": "무료",
+      "price": 0,
+      "period": null,
+      "features": ["동화 5편 이용"]
+    },
+    {
       "id": "monthly",
-      "name": "월간 구독",
+      "name": "월 구독",
       "price": 4900,
-      "period": "monthly",
-      "features": ["모든 동화 무제한", "오프라인 저장"]
+      "period": "month",
+      "features": ["모든 동화 무제한", "오프라인 저장", "광고 제거"]
     },
     {
       "id": "yearly",
-      "name": "연간 구독",
+      "name": "연 구독",
       "price": 39000,
-      "period": "yearly",
-      "features": ["모든 동화 무제한", "오프라인 저장", "2개월 무료"]
+      "period": "year",
+      "features": ["모든 동화 무제한", "오프라인 저장", "광고 제거", "2개월 무료"]
     }
   ]
 }
@@ -437,4 +448,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-01-28*
+*마지막 업데이트: 2026-02-08*

@@ -52,18 +52,25 @@ flowchart TD
 {
   "plans": [
     {
+      "id": "free",
+      "name": "무료",
+      "price": 0,
+      "period": null,
+      "features": ["동화 5편 이용"]
+    },
+    {
       "id": "monthly",
-      "name": "월간 구독",
+      "name": "월 구독",
       "price": 4900,
-      "period": "monthly",
-      "features": ["모든 동화 무제한", "오프라인 저장"]
+      "period": "month",
+      "features": ["모든 동화 무제한", "오프라인 저장", "광고 제거"]
     },
     {
       "id": "yearly",
-      "name": "연간 구독",
+      "name": "연 구독",
       "price": 39000,
-      "period": "yearly",
-      "features": ["모든 동화 무제한", "오프라인 저장", "2개월 무료"]
+      "period": "year",
+      "features": ["모든 동화 무제한", "오프라인 저장", "광고 제거", "2개월 무료"]
     }
   ]
 }

@@ -83,34 +83,37 @@ export interface Database {
           id: string;
           story_id: string;
           page_number: number;
+          media_type: string;
           image_url: string | null;
+          video_url: string | null;
           text_ko: string | null;
           text_en: string | null;
           audio_url_ko: string | null;
           audio_url_en: string | null;
-          lottie_url: string | null;
         };
         Insert: {
           id?: string;
           story_id: string;
           page_number: number;
+          media_type?: string;
           image_url?: string | null;
+          video_url?: string | null;
           text_ko?: string | null;
           text_en?: string | null;
           audio_url_ko?: string | null;
           audio_url_en?: string | null;
-          lottie_url?: string | null;
         };
         Update: {
           id?: string;
           story_id?: string;
           page_number?: number;
+          media_type?: string;
           image_url?: string | null;
+          video_url?: string | null;
           text_ko?: string | null;
           text_en?: string | null;
           audio_url_ko?: string | null;
           audio_url_en?: string | null;
-          lottie_url?: string | null;
         };
         Relationships: [
           {

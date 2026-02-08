@@ -60,14 +60,17 @@ export class StoryPageDto {
   @ApiProperty({ description: '텍스트 (영어)' })
   textEn!: string;
 
+  @ApiProperty({ description: '미디어 타입', enum: ['image', 'video'] })
+  mediaType!: 'image' | 'video';
+
+  @ApiProperty({ description: '비디오 URL', required: false })
+  videoUrl?: string;
+
   @ApiProperty({ description: '오디오 URL (한국어)', required: false })
   audioUrlKo?: string;
 
   @ApiProperty({ description: '오디오 URL (영어)', required: false })
   audioUrlEn?: string;
-
-  @ApiProperty({ description: 'Lottie 애니메이션 URL', required: false })
-  lottieUrl?: string;
 }
 
 export class StoryPagesResponseDto {
