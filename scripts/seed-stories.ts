@@ -3,7 +3,7 @@
  *
  * 사용법: pnpm run seed
  *
- * scripts/data/stories.json 파일을 읽어 DB에 일괄 등록합니다.
+ * ddukddak-story/delivery/stories.json 파일을 읽어 DB에 일괄 등록합니다.
  * - 기존 데이터는 TRUNCATE 후 재등록
  * - R2 업로드는 별도 처리 (이 스크립트는 DB INSERT만 담당)
  * - page_count, duration_minutes는 pages 배열에서 자동 계산
@@ -22,10 +22,11 @@ interface StoryPageInput {
   page_number: number;
   text_ko: string;
   text_en: string;
+  media_type: 'image' | 'video';
   image_url: string;
+  video_url: string | null;
   audio_url_ko: string;
   audio_url_en: string;
-  lottie_url?: string;
 }
 
 interface StoryInput {
@@ -54,13 +55,12 @@ async function main() {
   // 2. Supabase Admin 클라이언트 생성
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-  // 3. JSON 파일 읽기
-  const dataPath = path.join(__dirname, 'data', 'stories.json');
+  // 3. JSON 파일 읽기 (ddukddak-story/delivery/stories.json)
+  const dataPath = path.resolve(__dirname, '..', '..', 'ddukddak-story', 'delivery', 'stories.json');
 
   if (!fs.existsSync(dataPath)) {
     console.error(`ERROR: ${dataPath} not found.`);
-    console.error('잡스(PM)가 콘텐츠 JSON 파일을 제공할 예정입니다.');
-    console.error('scripts/data/stories.json 파일을 생성한 후 다시 실행해주세요.');
+    console.error('캉테가 ddukddak-story/delivery/stories.json에 콘텐츠를 준비해야 합니다.');
     process.exit(1);
   }
 
@@ -132,10 +132,11 @@ async function main() {
       page_number: page.page_number,
       text_ko: page.text_ko,
       text_en: page.text_en,
+      media_type: page.media_type ?? 'image',
       image_url: page.image_url,
+      video_url: page.video_url ?? null,
       audio_url_ko: page.audio_url_ko,
       audio_url_en: page.audio_url_en,
-      lottie_url: page.lottie_url ?? null,
     }));
 
     const { error: pagesError } = await supabase.from('story_pages').insert(pageRows);

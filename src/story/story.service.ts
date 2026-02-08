@@ -131,9 +131,10 @@ export class StoryService {
       imageUrl: data.image_url ?? '',
       textKo: data.text_ko ?? '',
       textEn: data.text_en ?? '',
+      mediaType: (data.media_type ?? 'image') as 'image' | 'video',
+      videoUrl: data.video_url ?? undefined,
       audioUrlKo: data.audio_url_ko ?? undefined,
       audioUrlEn: data.audio_url_en ?? undefined,
-      lottieUrl: data.lottie_url ?? undefined,
     };
   }
 }

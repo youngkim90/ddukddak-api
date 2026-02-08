@@ -52,6 +52,8 @@ interface StoryPage {
   imageUrl: string;
   textKo: string;
   textEn: string;
+  mediaType: 'image' | 'video';
+  videoUrl?: string;
   audioUrlKo?: string;
   audioUrlEn?: string;
 }
@@ -197,6 +199,8 @@ interface Subscription {
       "imageUrl": "https://...",
       "textKo": "옛날 옛적에 아기돼지 삼형제가 살았어요.",
       "textEn": "Once upon a time, there were three little pigs.",
+      "mediaType": "image",
+      "videoUrl": null,
       "audioUrlKo": "https://...",
       "audioUrlEn": "https://..."
     }
@@ -437,4 +441,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-01-28*
+*마지막 업데이트: 2026-02-08*

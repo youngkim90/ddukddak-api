@@ -43,7 +43,7 @@ fairytale/
 | Framework | NestJS 11.x | TypeScript |
 | Database | PostgreSQL 15.x | Supabase 호스팅 |
 | Auth | Supabase Auth | JWT 검증 |
-| Storage | Supabase Storage | 이미지, 오디오 파일 |
+| Storage | Cloudflare R2 | 이미지, 오디오, AI 영상 파일 |
 | 결제 | 토스페이먼츠 | 정기결제 (빌링키) |
 | API 문서 | Swagger | 자동 생성 |
 | 배포 | Cloud Run | Docker 컨테이너 |
@@ -75,7 +75,10 @@ flowchart TB
     subgraph Supabase["Supabase"]
         AUTH["Auth"]
         DB[(PostgreSQL)]
-        STORAGE["Storage<br/>(이미지/오디오)"]
+    end
+
+    subgraph CloudflareR2["Cloudflare R2"]
+        STORAGE["Storage<br/>(이미지/오디오/영상)"]
     end
 
     subgraph Payment["결제"]
@@ -86,7 +89,7 @@ flowchart TB
     WEB -->|"REST API + JWT"| API
     API -->|"JWT 검증"| AUTH
     API -->|"CRUD"| DB
-    API -->|"파일 URL"| STORAGE
+    API -->|"R2 Public URL"| STORAGE
     API <-->|"정기결제/웹훅"| TOSS
 ```
 
@@ -217,7 +220,9 @@ erDiagram
         uuid id PK
         uuid story_id FK
         int page_number
+        string media_type "image/video"
         string image_url
+        string video_url
         string text_ko
         string text_en
         string audio_url_ko
@@ -426,8 +431,9 @@ pnpm run test:e2e     # E2E 테스트
 ```text
 fairytale/
 ├── fairytale-planning/    # 기획 문서 (100% 완료)
+├── ddukddak-story/        # 콘텐츠 생성 - 캉테 담당
 ├── ddukddak-web/          # 프론트엔드 - Phase 2 API 연동 완료 ✅
-└── ddukddak-api/          # 백엔드 ← 현재 (Phase 2: 100% 완료 ✅)
+└── ddukddak-api/          # 백엔드 ← 현재 (Phase 3: 100% 완료 ✅)
 ```
 
 ---
@@ -441,14 +447,39 @@ fairytale/
 | **Region** | asia-northeast3 (서울) |
 | **CI/CD** | GitHub Actions (main 브랜치 PR 머지 시 자동 배포) |
 
-## 다음 작업 (Phase 3)
+## Phase 3 작업 현황 (출시 준비)
+
+### 전략 변경
+
+- MVP는 **무료 전용** 출시 (토스페이먼츠 실제 연동 제외)
+- 동화 접근: 전체 5편 무료 (`enableFreeMode=true`)
+- Storage: Supabase Storage → **Cloudflare R2** 전환
+
+### 진행률: 4/4 (100%) ✅ Phase 3 백엔드 완료!
+
+| # | 작업 | 상태 | 비고 |
+|---|------|------|------|
+| 3-1 | DB 스키마 마이그레이션 | ✅ 완료 | `media_type`, `video_url` 추가 / `lottie_url` 제거 |
+| 3-2 | 무료 전용 API 처리 | ✅ 완료 | `enableFreeMode` 환경변수로 SubscriptionGuard 우회 (기본값 `true`) |
+| 3-3 | 동화 콘텐츠 시드 스크립트 | ✅ 완료 | 토끼와 거북이 (13페이지) DB 등록 |
+| 3-4 | CLAUDE.md / 문서 업데이트 | ✅ 완료 | ERD, Storage, Phase 3 현황 반영 |
+
+### DB 마이그레이션 이력
+
+| 파일 | 설명 |
+|------|------|
+| `001_initial_schema.sql` | 초기 테이블 생성 |
+| `002_add_lottie_bgm_category.sql` | `lottie_url`, `bgm_url` 추가 + 카테고리 변경 |
+| `003_add_media_type_video_url.sql` | `media_type`, `video_url` 추가 / `lottie_url` 제거 |
+
+### 다음 작업
 
 | 작업 | 담당 | 상태 |
 |------|------|------|
-| 토스페이먼츠 실제 연동 | 코난 | ⏳ 대기 |
-| 프론트엔드 프로덕션 배포 | 프롱 | ✅ 완료 |
-| CORS 설정 (프로덕션 URL) | 코난 | ✅ 완료 |
+| 나머지 동화 4편 시드 | 코난 (캉테 콘텐츠 완료 후) | ⏳ 대기 |
+| R2 Signed URL 전환 | 코난 | ⏳ 대기 (유료 콘텐츠 도입 시) |
+| 인앱결제 (RevenueCat) 연동 | 코난 | ⏳ 대기 |
 
 ---
 
-*마지막 업데이트: 2026-01-31*
+*마지막 업데이트: 2026-02-08*

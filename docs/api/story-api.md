@@ -196,6 +196,8 @@ flowchart TD
       "imageUrl": "https://...",
       "textKo": "옛날 옛적에...",
       "textEn": "Once upon a time...",
+      "mediaType": "image",
+      "videoUrl": null,
       "audioUrlKo": "https://...",
       "audioUrlEn": "https://..."
     }
@@ -220,13 +222,16 @@ stories
 ├── is_free           BOOLEAN -- default false
 ├── page_count        INT
 ├── duration_minutes  INT
+├── bgm_url           TEXT
 └── created_at        TIMESTAMPTZ
 
 story_pages
 ├── id            UUID    PK
 ├── story_id      UUID    FK → stories.id
 ├── page_number   INT
+├── media_type    TEXT    -- 'image' | 'video' (DEFAULT 'image')
 ├── image_url     TEXT
+├── video_url     TEXT    -- AI 영상 MP4 URL (nullable)
 ├── text_ko       TEXT
 ├── text_en       TEXT
 ├── audio_url_ko  TEXT
