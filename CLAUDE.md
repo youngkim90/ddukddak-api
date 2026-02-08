@@ -11,6 +11,16 @@
 - **문서 관리**: 이 프로젝트 내 문서만 (`ddukddak-api/`)
 - **외부 문서**: 수정 필요 시 사용자 허락 후 수행
 
+### 관련 프로젝트
+
+```
+fairytale/
+├── fairytale-planning/    ← 기획 문서 - 잡스 담당
+├── ddukddak-story/        ← 콘텐츠 생성 - 캉테 담당
+├── ddukddak-web/          ← 프론트엔드 (Expo) - 프롱 담당
+└── ddukddak-api/          ← 백엔드 (NestJS) - 코난 담당
+```
+
 ---
 
 ## 프로젝트 개요

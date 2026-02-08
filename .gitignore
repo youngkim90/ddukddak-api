@@ -25,6 +25,9 @@ cclsp.json
 .serena/
 CLAUDE.local.md
 
+# Supabase local
+supabase/.temp/
+
 # IDE
 .idea/
 .vscode/
