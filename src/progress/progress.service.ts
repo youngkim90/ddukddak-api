@@ -110,6 +110,20 @@ export class ProgressService {
     return this.mapToResponse(data);
   }
 
+  async resetAll(user: User): Promise<{ message: string }> {
+    const { error } = await this.supabaseService
+      .getAdminClient()
+      .from('reading_progress')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (error) {
+      throw new Error(`Failed to reset progress: ${error.message}`);
+    }
+
+    return { message: 'All progress reset successfully' };
+  }
+
   private mapToResponse(data: ProgressWithStory): ProgressResponseDto {
     return {
       storyId: data.story_id,
