@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Param, Body, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Put, Param, Body, ParseUUIDPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser } from '../common/decorators';
@@ -21,6 +21,14 @@ export class ProgressController {
   @ApiResponse({ status: 401, description: '인증 실패' })
   async findAll(@CurrentUser() user: User): Promise<ProgressListResponseDto> {
     return this.progressService.findAll(user);
+  }
+
+  @Delete()
+  @ApiOperation({ summary: '전체 진행률 초기화' })
+  @ApiResponse({ status: 200, description: '전체 진행률 초기화 성공' })
+  @ApiResponse({ status: 401, description: '인증 실패' })
+  async resetAll(@CurrentUser() user: User): Promise<{ message: string }> {
+    return this.progressService.resetAll(user);
   }
 
   @Get(':storyId')

@@ -245,6 +245,18 @@ interface Subscription {
 }
 ```
 
+#### DELETE /api/progress 🔒
+전체 진행률 초기화 (로그인 시 호출용)
+
+**Response:**
+```json
+{
+  "message": "All progress reset successfully"
+}
+```
+
+> 인증된 사용자의 모든 동화 읽기 진행률을 삭제합니다. 프론트에서 로그인 성공 후 호출하면 모든 동화가 1페이지부터 다시 시작됩니다.
+
 ---
 
 ### 4. 구독 (Subscriptions)
@@ -420,6 +432,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 | GET /api/progress | ✅ 완료 | ✅ 완료 | |
 | GET /api/progress/:storyId | ✅ 완료 | ✅ 완료 | 진행률 없으면 404 |
 | PUT /api/progress/:storyId | ✅ 완료 | ✅ 완료 | upsert 방식 |
+| DELETE /api/progress | ✅ 완료 | ⏳ 대기 | 전체 진행률 초기화 (로그인 시) |
 | GET /api/subscriptions/plans | ✅ 완료 | ✅ 완료 | |
 | GET /api/subscriptions/me | ✅ 완료 | ✅ 완료 | 구독 없으면 `{ subscription: null }` |
 | POST /api/subscriptions | 🔄 스켈레톤 | ⏳ 대기 | 토스 실제 연동 대기 |
@@ -448,4 +461,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-02-08*
+*마지막 업데이트: 2026-02-09*
