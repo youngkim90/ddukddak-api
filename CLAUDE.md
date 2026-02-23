@@ -44,7 +44,7 @@ fairytale/
 | Database | PostgreSQL 15.x | Supabase 호스팅 |
 | Auth | Supabase Auth | JWT 검증 |
 | Storage | Cloudflare R2 | 이미지, 오디오, AI 영상 파일 |
-| 결제 | 토스페이먼츠 | 정기결제 (빌링키) |
+| 결제 | RevenueCat (인앱결제) | ⏳ 추후 연동 (MVP는 무료) |
 | API 문서 | Swagger | 자동 생성 |
 | 배포 | Cloud Run | Docker 컨테이너 |
 
@@ -81,21 +81,16 @@ flowchart TB
         STORAGE["Storage<br/>(이미지/오디오/영상)"]
     end
 
-    subgraph Payment["결제"]
-        TOSS["토스페이먼츠"]
-    end
-
     WEB -->|"Supabase Auth"| AUTH
     WEB -->|"REST API + JWT"| API
     API -->|"JWT 검증"| AUTH
     API -->|"CRUD"| DB
     API -->|"R2 Public URL"| STORAGE
-    API <-->|"정기결제/웹훅"| TOSS
 ```
 
 ---
 
-## 프로젝트 구조 (목표)
+## 프로젝트 구조
 
 ```
 src/
@@ -113,30 +108,13 @@ src/
 ├── supabase/               # Supabase 클라이언트
 │   ├── supabase.module.ts
 │   └── supabase.service.ts
+├── types/                  # Database 타입 정의
+│   └── database.types.ts
 ├── user/                   # 사용자 모듈
-│   ├── user.module.ts
-│   ├── user.controller.ts
-│   ├── user.service.ts
-│   └── dto/
 ├── story/                  # 동화 모듈
-│   ├── story.module.ts
-│   ├── story.controller.ts
-│   ├── story.service.ts
-│   └── dto/
 ├── progress/               # 진행률 모듈
-│   ├── progress.module.ts
-│   ├── progress.controller.ts
-│   ├── progress.service.ts
-│   └── dto/
 ├── subscription/           # 구독 모듈
-│   ├── subscription.module.ts
-│   ├── subscription.controller.ts
-│   ├── subscription.service.ts
-│   ├── toss.service.ts     # 토스페이먼츠 연동
-│   └── dto/
 └── webhook/                # 웹훅 모듈
-    ├── webhook.module.ts
-    └── webhook.controller.ts
 ```
 
 ---
@@ -157,7 +135,7 @@ src/
 |--------|-----------|------|------|
 | GET | `/api/stories` | 동화 목록 (필터, 페이지네이션) | 🔓 |
 | GET | `/api/stories/:id` | 동화 상세 | 🔓 |
-| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어용) | 💎 |
+| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어용) | 🔓 MVP 무료 |
 
 ### 진행률 (Progress)
 | 메서드 | 엔드포인트 | 설명 | 인증 |
@@ -180,7 +158,7 @@ src/
 |--------|-----------|------|------|
 | POST | `/api/webhooks/toss` | 토스페이먼츠 웹훅 | 🔐 |
 
-**인증 구분**: 🔓 공개 | 🔒 로그인 필요 | 💎 구독 필요 | 🔐 내부용 (시크릿 키)
+**인증 구분**: 🔓 공개 | 🔒 로그인 필요 | 🔐 내부용 (시크릿 키)
 
 ---
 
@@ -208,7 +186,7 @@ erDiagram
         string title_en
         string description_ko
         string description_en
-        string category "adventure/lesson/emotion/creativity"
+        string category "adventure/folktale/emotion/creativity"
         string age_group "3-5/5-7/7+"
         string thumbnail_url
         boolean is_free
@@ -256,7 +234,7 @@ erDiagram
 
 ```env
 # Server
-PORT=3000
+PORT=4000
 NODE_ENV=development
 
 # Supabase
@@ -264,9 +242,12 @@ SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_ANON_KEY=xxx
 SUPABASE_SERVICE_ROLE_KEY=xxx
 
-# 토스페이먼츠
+# 토스페이먼츠 (스켈레톤)
 TOSS_SECRET_KEY=test_sk_xxx
 TOSS_WEBHOOK_SECRET=xxx
+
+# Free Mode (MVP: 전체 콘텐츠 무료 접근)
+ENABLE_FREE_MODE=true
 
 # CORS
 CORS_ORIGIN=http://localhost:3000
@@ -278,12 +259,13 @@ CORS_ORIGIN=http://localhost:3000
 
 ```bash
 pnpm install          # 의존성 설치
-pnpm run start:dev    # 개발 서버 (watch mode)
+pnpm run start:dev    # 개발 서버 (watch mode, port 4000)
 pnpm run build        # 빌드
 pnpm run start:prod   # 프로덕션 실행
 pnpm run lint         # 린트
 pnpm run test         # 유닛 테스트
 pnpm run test:e2e     # E2E 테스트
+pnpm run seed         # 동화 시드 데이터 등록
 ```
 
 ---
@@ -294,7 +276,7 @@ pnpm run test:e2e     # E2E 테스트
 |------|------|------|
 | API 명세 | `../fairytale-planning/docs/specs/5_API_SPEC.md` | 엔드포인트 상세 |
 | 기술 스택 | `../fairytale-planning/docs/specs/4_TECH_STACK.md` | 아키텍처, 배포 |
-| 개발 계획 | `../fairytale-planning/docs/management/6_DEV_PLAN.md` | Phase 3 작업 |
+| 개발 계획 | `../fairytale-planning/docs/management/6_DEV_PLAN.md` | Phase 작업 |
 | 작업 현황 | `../fairytale-planning/docs/management/7_TASK_TRACKER.md` | 전체 진행률 |
 | 작업 지시서 | `../fairytale-planning/docs/work-orders/WORK_ORDER_CONAN.md` | 백엔드 작업 |
 
@@ -307,134 +289,10 @@ pnpm run test:e2e     # E2E 테스트
 | 프로젝트 | `../ddukddak-web/` |
 | 프레임워크 | Expo 53 + TypeScript |
 | **Production URL** | https://ddukddak.expo.app |
-| 상태 | Phase 2 API 연동 완료 ✅ |
 | Auth | Supabase Auth (프론트에서 직접 연동) |
 | API 호출 | axios + TanStack Query |
 
 **백엔드 역할**: Supabase JWT 토큰 검증 → 사용자 정보 추출 → API 응답
-
----
-
-## Phase 2 작업 현황
-
-### 진행률: 9/9 (100%) ✅ Phase 2 완료!
-
-```
-✅ 2-1. 프로젝트 세팅      [██████████] 100%
-✅ 2-2. 사용자 API         [██████████] 100%
-✅ 2-3. 동화 API           [██████████] 100%
-✅ 2-4. 진행률 API         [██████████] 100%
-✅ 2-5. 구독/결제 API      [██████████] 100%
-✅ 2-5a. Supabase 연동     [██████████] 100%
-✅ 2-5b. 테스트 코드 작성  [██████████] 100%
-✅ 2-6. 프론트 API 연동    [██████████] 100%
-✅ 2-7. 배포               [██████████] 100%  ← Cloud Run 배포 완료!
-```
-
-### 작업 상세
-
-| # | 작업 | 상태 | 완료 항목 |
-|---|------|------|----------|
-| 2-1 | 프로젝트 세팅 | ✅ 완료 | |
-| | - 필수 패키지 설치 | ✅ | @nestjs/config, @supabase/supabase-js, class-validator, class-transformer, @nestjs/swagger |
-| | - 환경 변수 설정 | ✅ | ConfigModule, .env.example |
-| | - Supabase 클라이언트 | ✅ | SupabaseModule, SupabaseService |
-| | - JWT Guard 설정 | ✅ | JwtAuthGuard, @Public, @CurrentUser |
-| | - Swagger 설정 | ✅ | /docs 엔드포인트 |
-| | - 공통 모듈 구조 | ✅ | decorators, guards |
-| | - Docker 설정 | ✅ | Dockerfile, .dockerignore |
-| 2-2 | 사용자 API | ✅ 완료 | |
-| | - GET /api/users/me | ✅ | 프로필 조회 |
-| | - PATCH /api/users/me | ✅ | 프로필 수정 |
-| | - DELETE /api/users/me | ✅ | 회원 탈퇴 |
-| 2-3 | 동화 API | ✅ 완료 | |
-| | - GET /api/stories | ✅ | 목록 조회 (필터, 페이지네이션) |
-| | - GET /api/stories/:id | ✅ | 상세 조회 |
-| | - GET /api/stories/:id/pages | ✅ | 페이지 조회 (SubscriptionGuard) |
-| 2-4 | 진행률 API | ✅ 완료 | |
-| | - GET /api/progress | ✅ | 진행률 목록 조회 |
-| | - GET /api/progress/:storyId | ✅ | 특정 동화 진행률 |
-| | - PUT /api/progress/:storyId | ✅ | 진행률 저장 |
-| 2-5 | 구독/결제 API | ✅ 완료 | |
-| | - GET /api/subscriptions/plans | ✅ | 플랜 목록 |
-| | - GET /api/subscriptions/me | ✅ | 내 구독 정보 |
-| | - POST /api/subscriptions | ✅ | 구독 시작 (결제) |
-| | - DELETE /api/subscriptions/me | ✅ | 구독 해지 |
-| | - 토스페이먼츠 연동 | 🔄 | TossService (스켈레톤, 실제 API 연동 대기) |
-| | - POST /api/webhooks/toss | ✅ | 웹훅 처리 |
-| 2-5a | Supabase 연동 | ✅ 완료 | |
-| | - Supabase 프로젝트 생성 | ✅ | knunektvaagejsgqbhvw.supabase.co |
-| | - 테이블 생성 (ERD 기반) | ✅ | users, stories, story_pages, subscriptions, reading_progress |
-| | - .env 실제 키 설정 | ✅ | URL, ANON_KEY, SERVICE_ROLE_KEY |
-| | - API 통합 테스트 | ✅ | 동화 목록/상세 API 검증 완료 |
-| 2-5b | 테스트 코드 작성 | ✅ 완료 | |
-| | - E2E 테스트 | ✅ | Story 11개, User 8개, App 2개 |
-| | - 구독/결제 유닛 테스트 | ✅ | SubscriptionService 8개 |
-| | - Mock 기반 테스트 | ✅ | 실제 DB 의존성 없음 |
-| 2-6 | 프론트 API 연동 | ✅ 완료 | |
-| | - 사용자 API 연동 | ✅ | /api/users/* |
-| | - 동화 API 연동 | ✅ | /api/stories/* |
-| | - 진행률 API 연동 | ✅ | /api/progress/* |
-| | - 구독 API 연동 | ✅ | /api/subscriptions/* (토스 결제 제외) |
-| 2-7 | 배포 | ✅ 완료 | |
-| | - Dockerfile 작성 | ✅ | 멀티스테이지 빌드, pnpm |
-| | - .dockerignore 작성 | ✅ | |
-| | - 로컬 Docker 테스트 | ✅ | 빌드 성공 |
-| | - Health 엔드포인트 | ✅ | GET /api/health |
-| | - GitHub Actions CI/CD | ✅ | .github/workflows/deploy.yml |
-| | - Cloud Run 배포 | ✅ | https://ddukddak-api-2lb4yqjazq-du.a.run.app |
-
----
-
-## 설정 현황
-
-- [x] NestJS 11.0.1 프로젝트 생성
-- [x] TypeScript strict mode
-- [x] ESLint + Prettier 설정
-- [x] Git 저장소 연동
-- [x] 필수 패키지 설치
-- [x] 환경 변수 설정 (ConfigModule)
-- [x] Supabase 클라이언트 모듈
-- [x] JWT Guard 설정
-- [x] Swagger 설정
-- [x] 공통 모듈 구조 (decorators, guards)
-- [x] Docker 설정 (Dockerfile, .dockerignore)
-- [x] CI/CD 설정 (GitHub Actions)
-- [x] Supabase Database 타입 안전성 (`src/types/database.types.ts`)
-
----
-
-## 테스트 현황
-
-**완료된 테스트: 29개**
-
-| 파일 | 테스트 수 | 유형 |
-|------|----------|------|
-| `test/app.e2e-spec.ts` | 2 | E2E |
-| `test/story.e2e-spec.ts` | 11 | E2E |
-| `test/user.e2e-spec.ts` | 8 | E2E |
-| `src/subscription/subscription.service.spec.ts` | 8 | Unit |
-
-**테스트 특징:**
-- Mock 기반 테스트 (실제 DB 의존성 없음)
-- CI/CD 환경에서 안전하게 실행 가능
-- 핵심 API 엔드포인트 및 에러 케이스 커버
-
-**테스트 도구:**
-- Unit Test: Jest (NestJS 기본)
-- E2E Test: Supertest + Jest
-
----
-
-## 관련 프로젝트
-
-```text
-fairytale/
-├── fairytale-planning/    # 기획 문서 (100% 완료)
-├── ddukddak-story/        # 콘텐츠 생성 - 캉테 담당
-├── ddukddak-web/          # 프론트엔드 - Phase 2 API 연동 완료 ✅
-└── ddukddak-api/          # 백엔드 ← 현재 (Phase 3: 100% 완료 ✅)
-```
 
 ---
 
@@ -447,22 +305,36 @@ fairytale/
 | **Region** | asia-northeast3 (서울) |
 | **CI/CD** | GitHub Actions (main 브랜치 PR 머지 시 자동 배포) |
 
-## Phase 3 작업 현황 (출시 준비)
+---
 
-### 전략 변경
+## 테스트 현황
 
-- MVP는 **무료 전용** 출시 (토스페이먼츠 실제 연동 제외)
-- 동화 접근: 전체 5편 무료 (`enableFreeMode=true`)
-- Storage: Supabase Storage → **Cloudflare R2** 전환
+| 파일 | 테스트 수 | 유형 |
+|------|----------|------|
+| `test/app.e2e-spec.ts` | 2 | E2E |
+| `test/story.e2e-spec.ts` | 11 | E2E |
+| `test/user.e2e-spec.ts` | 8 | E2E |
+| `src/subscription/subscription.service.spec.ts` | 8 | Unit |
 
-### 진행률: 4/4 (100%) ✅ Phase 3 백엔드 완료!
+Mock 기반 / 실제 DB 의존성 없음 / CI/CD 환경에서 안전하게 실행 가능
+
+---
+
+## Phase 현황
+
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| Phase 2 | NestJS 세팅, 전체 API 구현, Supabase 연동, Cloud Run 배포 | ✅ 완료 |
+| Phase 3 | DB 스키마 마이그레이션, 무료 모드, 동화 시드, R2 스토리지 | ✅ 완료 |
+
+### Phase 3 상세
 
 | # | 작업 | 상태 | 비고 |
 |---|------|------|------|
 | 3-1 | DB 스키마 마이그레이션 | ✅ 완료 | `media_type`, `video_url` 추가 / `lottie_url` 제거 |
-| 3-2 | 무료 전용 API 처리 | ✅ 완료 | `enableFreeMode` 환경변수로 SubscriptionGuard 우회 (기본값 `true`) |
-| 3-3 | 동화 콘텐츠 시드 스크립트 | ✅ 완료 | 토끼와 거북이 (13페이지) DB 등록 |
-| 3-4 | CLAUDE.md / 문서 업데이트 | ✅ 완료 | ERD, Storage, Phase 3 현황 반영 |
+| 3-2 | 무료 전용 API 처리 | ✅ 완료 | `ENABLE_FREE_MODE=true`로 SubscriptionGuard 우회 |
+| 3-3 | 동화 콘텐츠 시드 | ✅ 완료 | 3편 등록 (토끼와거북이 13p + 아기돼지삼형제 15p + 금도끼은도끼 14p = 42p) |
+| 3-4 | 문서 업데이트 | ✅ 완료 | |
 
 ### DB 마이그레이션 이력
 
@@ -476,10 +348,37 @@ fairytale/
 
 | 작업 | 담당 | 상태 |
 |------|------|------|
-| 나머지 동화 4편 시드 | 코난 (캉테 콘텐츠 완료 후) | ⏳ 대기 |
+| 나머지 동화 2편 시드 (04번, 05번) | 코난 (캉테 콘텐츠 완료 후) | ⏳ 대기 |
 | R2 Signed URL 전환 | 코난 | ⏳ 대기 (유료 콘텐츠 도입 시) |
 | 인앱결제 (RevenueCat) 연동 | 코난 | ⏳ 대기 |
 
 ---
 
-*마지막 업데이트: 2026-02-08*
+## Claude Commands & Skills
+
+> `.claude/` 디렉터리에 정의된 자동화 도구 목록입니다.
+> Claude Code에서는 `/명령어`로 호출하고, Codex 등 다른 AI 에이전트는 아래 경로를 직접 참조하세요.
+
+### Commands (`.claude/commands/`)
+
+| 파일 | 호출 | 역할 |
+|------|------|------|
+| `dd-brainstorm.md` | `/dd-brainstorm` | 기능 구현 전 요구사항·설계 탐색 (창의적 작업 전 필수) |
+| `dd-commit.md` | `/dd-commit` | 변경 사항 검토 후 커밋 생성 |
+| `dd-pr.md` | `/dd-pr` | 브랜치 생성, 커밋, PR 오픈 자동화 |
+| `dd-work-order.md` | `/dd-work-order` | 잡스의 작업지시서(`WORK_ORDER_CONAN.md`) 읽고 작업 수행 후 보고서 작성 |
+| `dd-work.md` | `/dd-work` | 브랜치 관리·구현·커밋/PR 포함 작업 실행 |
+
+### Skills (`.claude/skills/`)
+
+| 디렉터리 | 역할 |
+|----------|------|
+| `api-security/` | API 보안 검토, 인증/인가, 입력 유효성 검사, OWASP 취약점 점검 |
+| `brainstorming/` | 창의적 작업 전 요구사항·설계 탐색 |
+| `db-schema/` | Ddukddak 테이블 스키마 및 관계 참조 (쿼리·DTO·DB 수정 시 사용) |
+| `nestjs-expert/` | NestJS 모듈/컨트롤러/서비스/DTO/가드/인터셉터 등 백엔드 개발 전문 지식 |
+| `using-git-worktrees/` | 기능 작업 격리를 위한 Git Worktree 생성 |
+
+---
+
+*마지막 업데이트: 2026-02-23*

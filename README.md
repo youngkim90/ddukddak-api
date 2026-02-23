@@ -11,7 +11,7 @@
 - 동화 목록 및 상세 조회 (카테고리/연령별 필터)
 - 동화 뷰어 (페이지 넘김, TTS, AI 영상, BGM)
 - 읽기 진행률 저장 및 조회
-- 구독 결제 (추후 RevenueCat 인앱결제 + 토스페이먼츠)
+- 구독 결제 (추후 RevenueCat 인앱결제 - MVP는 무료 출시)
 - 사용자 프로필 관리
 
 ## 기술 스택
@@ -22,7 +22,7 @@
 | Database | PostgreSQL (Supabase) |
 | Auth | Supabase Auth (JWT) |
 | Storage | Cloudflare R2 (이미지, 오디오, AI 영상) |
-| 결제 | 토스페이먼츠 (스켈레톤, 추후 연동) |
+| 결제 | RevenueCat (인앱결제) | ⏳ 추후 연동 (MVP 무료) |
 | 배포 | Google Cloud Run |
 | CI/CD | GitHub Actions |
 
@@ -97,7 +97,7 @@ CORS_ORIGIN=http://localhost:3000
 | DELETE | `/api/users/me` | 회원 탈퇴 | JWT |
 | GET | `/api/stories` | 동화 목록 | |
 | GET | `/api/stories/:id` | 동화 상세 | |
-| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어) | 구독 |
+| GET | `/api/stories/:id/pages` | 동화 페이지 (뷰어) | MVP 무료 |
 | GET | `/api/progress` | 진행률 목록 | JWT |
 | GET | `/api/progress/:storyId` | 동화 진행률 조회 | JWT |
 | PUT | `/api/progress/:storyId` | 동화 진행률 저장 | JWT |
