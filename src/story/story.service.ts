@@ -6,6 +6,7 @@ import {
   StoryListResponseDto,
   StoryPagesResponseDto,
   StoryPageDto,
+  SentenceDto,
   StoryQueryDto,
 } from './dto';
 
@@ -83,11 +84,11 @@ export class StoryService {
       throw new NotFoundException(`Story with ID ${id} not found`);
     }
 
-    // Fetch pages
+    // Fetch pages with sentences
     const { data: pages, error: pagesError } = await this.supabaseService
       .getClient()
       .from('story_pages')
-      .select('*')
+      .select('*, story_page_sentences(*)')
       .eq('story_id', id)
       .order('page_number', { ascending: true });
 
@@ -124,7 +125,20 @@ export class StoryService {
     return response;
   }
 
-  private mapPageToResponse(data: Tables<'story_pages'>): StoryPageDto {
+  private mapPageToResponse(
+    data: Tables<'story_pages'> & { story_page_sentences?: Tables<'story_page_sentences'>[] },
+  ): StoryPageDto {
+    const rawSentences = data.story_page_sentences ?? [];
+    const sentences: SentenceDto[] = rawSentences
+      .sort((a, b) => a.sentence_index - b.sentence_index)
+      .map((s) => ({
+        sentenceIndex: s.sentence_index,
+        textKo: s.text_ko ?? undefined,
+        textEn: s.text_en ?? undefined,
+        audioUrlKo: s.audio_url_ko ?? undefined,
+        audioUrlEn: s.audio_url_en ?? undefined,
+      }));
+
     return {
       id: data.id,
       pageNumber: data.page_number,
@@ -135,6 +149,7 @@ export class StoryService {
       videoUrl: data.video_url ?? undefined,
       audioUrlKo: data.audio_url_ko ?? undefined,
       audioUrlEn: data.audio_url_en ?? undefined,
+      sentences,
     };
   }
 }

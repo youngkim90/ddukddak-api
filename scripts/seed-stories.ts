@@ -18,6 +18,14 @@ const path = require('path');
 
 dotenv.config();
 
+interface SentenceInput {
+  sentence_index: number;
+  text_ko?: string;
+  text_en?: string;
+  audio_url_ko?: string;
+  audio_url_en?: string;
+}
+
 interface StoryPageInput {
   page_number: number;
   text_ko: string;
@@ -27,6 +35,7 @@ interface StoryPageInput {
   video_url: string | null;
   audio_url_ko: string;
   audio_url_en: string;
+  sentences?: SentenceInput[];
 }
 
 interface StoryInput {
@@ -69,7 +78,8 @@ async function main() {
 
   console.log(`\n📚 동화 ${stories.length}편 시드 시작...\n`);
 
-  // 4. 기존 데이터 TRUNCATE (story_pages → stories 순서)
+  // 4. 기존 데이터 TRUNCATE (의존 순서: story_page_sentences → story_pages → stories)
+  // story_pages ON DELETE CASCADE이므로 story_pages 삭제 시 sentences도 자동 삭제됨
   console.log('🗑️  기존 데이터 삭제 중...');
 
   const { error: truncatePagesError } = await supabase
@@ -139,11 +149,51 @@ async function main() {
       audio_url_en: page.audio_url_en,
     }));
 
-    const { error: pagesError } = await supabase.from('story_pages').insert(pageRows);
+    const { data: insertedPages, error: pagesError } = await supabase
+      .from('story_pages')
+      .insert(pageRows)
+      .select('id, page_number');
 
-    if (pagesError) {
-      console.error(`  ❌ 페이지 INSERT 실패:`, pagesError.message);
+    if (pagesError || !insertedPages) {
+      console.error(`  ❌ 페이지 INSERT 실패:`, pagesError?.message);
       continue;
+    }
+
+    // story_page_sentences INSERT (sentences 배열이 있는 페이지만)
+    const pagesWithSentences = story.pages.filter(
+      (p) => p.sentences && p.sentences.length > 0,
+    );
+
+    if (pagesWithSentences.length > 0) {
+      // page_number → page_id 매핑
+      const pageIdByNumber = new Map(
+        insertedPages.map((p: { id: string; page_number: number }) => [p.page_number, p.id]),
+      );
+
+      const sentenceRows = pagesWithSentences.flatMap((p) => {
+        const pageId = pageIdByNumber.get(p.page_number);
+        if (!pageId || !p.sentences) return [];
+        return p.sentences.map((s) => ({
+          page_id: pageId,
+          sentence_index: s.sentence_index,
+          text_ko: s.text_ko ?? null,
+          text_en: s.text_en ?? null,
+          audio_url_ko: s.audio_url_ko ?? null,
+          audio_url_en: s.audio_url_en ?? null,
+        }));
+      });
+
+      if (sentenceRows.length > 0) {
+        const { error: sentencesError } = await supabase
+          .from('story_page_sentences')
+          .insert(sentenceRows);
+
+        if (sentencesError) {
+          console.error(`  ❌ 문장 INSERT 실패:`, sentencesError.message);
+          continue;
+        }
+        console.log(`  📝 문장 ${sentenceRows.length}개 등록됨`);
+      }
     }
 
     console.log(`  ✅ 완료 (ID: ${storyId})`);

@@ -46,16 +46,25 @@ interface Story {
 ### StoryPage
 
 ```typescript
+interface Sentence {
+  sentenceIndex: number;   // 0-based, 오름차순 정렬 보장
+  textKo?: string;
+  textEn?: string;
+  audioUrlKo?: string;
+  audioUrlEn?: string;
+}
+
 interface StoryPage {
   id: string;
   pageNumber: number;
   imageUrl: string;
-  textKo: string;
+  textKo: string;          // 페이지 전체 텍스트 (하위 호환)
   textEn: string;
   mediaType: 'image' | 'video';
   videoUrl?: string;
-  audioUrlKo?: string;
+  audioUrlKo?: string;     // 페이지 단위 오디오 (Phase 2에서 제거 예정)
   audioUrlEn?: string;
+  sentences: Sentence[];   // 문장 단위 TTS 데이터 (없으면 [])
 }
 ```
 
@@ -202,11 +211,30 @@ interface Subscription {
       "mediaType": "image",
       "videoUrl": null,
       "audioUrlKo": "https://...",
-      "audioUrlEn": "https://..."
+      "audioUrlEn": "https://...",
+      "sentences": [
+        {
+          "sentenceIndex": 0,
+          "textKo": "옛날 옛적에",
+          "textEn": "Once upon a time,",
+          "audioUrlKo": "https://..."
+        },
+        {
+          "sentenceIndex": 1,
+          "textKo": "아기돼지 삼형제가 살았어요.",
+          "textEn": "there were three little pigs.",
+          "audioUrlKo": "https://..."
+        }
+      ]
     }
   ]
 }
 ```
+
+> **sentences 연동 가이드**
+> - `sentences`는 항상 배열 (null 없음, 없으면 `[]`)
+> - `sentences.length > 0` → 문장 단위 TTS 큐 재생
+> - `sentences.length === 0` → `audioUrlKo/En`으로 페이지 단위 재생 (fallback)
 
 ---
 
@@ -461,4 +489,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-02-09*
+*마지막 업데이트: 2026-02-24 (sentences 문장 단위 TTS 필드 추가)*
