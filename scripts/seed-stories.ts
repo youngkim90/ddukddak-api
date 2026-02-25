@@ -103,6 +103,7 @@ async function main() {
   console.log('✅ 기존 데이터 삭제 완료\n');
 
   // 5. 동화 INSERT
+  let failCount = 0;
   for (let i = 0; i < stories.length; i++) {
     const story = stories[i]!;
     const pageCount = story.pages.length;
@@ -131,6 +132,7 @@ async function main() {
 
     if (storyError || !insertedStory) {
       console.error(`  ❌ 동화 INSERT 실패:`, storyError?.message);
+      failCount++;
       continue;
     }
 
@@ -156,6 +158,7 @@ async function main() {
 
     if (pagesError || !insertedPages) {
       console.error(`  ❌ 페이지 INSERT 실패:`, pagesError?.message);
+      failCount++;
       continue;
     }
 
@@ -190,6 +193,7 @@ async function main() {
 
         if (sentencesError) {
           console.error(`  ❌ 문장 INSERT 실패:`, sentencesError.message);
+          failCount++;
           continue;
         }
         console.log(`  📝 문장 ${sentenceRows.length}개 등록됨`);
@@ -197,6 +201,11 @@ async function main() {
     }
 
     console.log(`  ✅ 완료 (ID: ${storyId})`);
+  }
+
+  if (failCount > 0) {
+    console.error(`\n❌ 시드 실패! ${failCount}건 오류 발생 (총 ${stories.length}편 중)\n`);
+    process.exit(1);
   }
 
   console.log(`\n🎉 시드 완료! 총 ${stories.length}편 등록됨\n`);

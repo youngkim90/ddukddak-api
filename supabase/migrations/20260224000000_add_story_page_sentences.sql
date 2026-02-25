@@ -14,3 +14,9 @@ CREATE TABLE story_page_sentences (
 
 -- 페이지별 문장 조회 성능 최적화 인덱스
 CREATE INDEX idx_story_page_sentences_page_id ON story_page_sentences(page_id);
+
+-- RLS: story_pages와 동일하게 누구나 읽기 가능, 쓰기는 차단
+ALTER TABLE story_page_sentences ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Story page sentences are viewable by everyone"
+  ON story_page_sentences FOR SELECT USING (true);
