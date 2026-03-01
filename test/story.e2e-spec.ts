@@ -35,20 +35,46 @@ const mockStories = [
   },
 ];
 
-// 향후 페이지 테스트에서 사용할 수 있도록 보관
-const _mockPages = [
-  {
-    id: 'page-1',
-    story_id: '11111111-1111-1111-1111-111111111111',
-    page_number: 1,
-    image_url: 'https://example.com/page1.jpg',
-    text_ko: '옛날 옛적에 아기돼지 삼형제가 살았어요.',
-    text_en: 'Once upon a time, there were three little pigs.',
-    audio_url_ko: 'https://example.com/audio1_ko.mp3',
-    audio_url_en: 'https://example.com/audio1_en.mp3',
-  },
-];
-void _mockPages; // suppress unused variable warning
+// 페이지 mock 데이터
+const mockPageWithoutSentences = {
+  id: 'page-1',
+  story_id: '11111111-1111-1111-1111-111111111111',
+  page_number: 1,
+  media_type: 'image',
+  image_url: 'https://example.com/page1.jpg',
+  video_url: null,
+  text_ko: '옛날 옛적에 아기돼지 삼형제가 살았어요.',
+  text_en: 'Once upon a time, there were three little pigs.',
+  audio_url_ko: 'https://example.com/audio1_ko.mp3',
+  audio_url_en: 'https://example.com/audio1_en.mp3',
+  story_page_sentences: [],
+};
+
+const mockPageWithSentences = {
+  ...mockPageWithoutSentences,
+  id: 'page-2',
+  page_number: 2,
+  story_page_sentences: [
+    {
+      id: 'sentence-2',
+      page_id: 'page-2',
+      sentence_index: 1,
+      text_ko: '두 번째 문장이에요.',
+      text_en: 'This is the second sentence.',
+      audio_url_ko: null,
+      audio_url_en: null,
+    },
+    {
+      id: 'sentence-1',
+      page_id: 'page-2',
+      sentence_index: 0,
+      text_ko: '첫 번째 문장이에요.',
+      text_en: 'This is the first sentence.',
+      audio_url_ko: 'https://example.com/s1_ko.mp3',
+      audio_url_en: null,
+    },
+  ],
+};
 
 // Mock Supabase 클라이언트
 const createMockSupabaseClient = () => ({
@@ -58,6 +84,7 @@ const createMockSupabaseClient = () => ({
   order: jest.fn().mockReturnThis(),
   range: jest.fn().mockReturnThis(),
   single: jest.fn().mockReturnThis(),
+  neq: jest.fn().mockReturnThis(),
   auth: {
     getUser: jest.fn(),
   },
@@ -235,6 +262,67 @@ describe('StoryController (e2e)', () => {
         .get(`/api/stories/${mockStories[0].id}/pages`)
         .set('Authorization', 'Bearer invalid-token')
         .expect(401);
+    });
+
+    it('should return pages with empty sentences array when no sentences exist', async () => {
+      // auth.getUser → 유효한 사용자 반환
+      mockSupabaseClient.auth.getUser.mockResolvedValueOnce({
+        data: { user: { id: 'user-123', email: 'test@test.com' } },
+        error: null,
+      });
+      // story 존재 확인 (single)
+      mockSupabaseClient.single.mockResolvedValueOnce({
+        data: { id: mockStories[0].id },
+        error: null,
+      });
+      // story_pages + story_page_sentences 조회 (order)
+      mockSupabaseClient.order.mockResolvedValueOnce({
+        data: [mockPageWithoutSentences],
+        error: null,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/stories/${mockStories[0].id}/pages`)
+        .set('Authorization', 'Bearer valid-token')
+        .expect(200);
+
+      expect(response.body).toHaveProperty('pages');
+      expect(Array.isArray(response.body.pages)).toBe(true);
+      expect(response.body.pages[0]).toHaveProperty('sentences');
+      expect(Array.isArray(response.body.pages[0].sentences)).toBe(true);
+      expect(response.body.pages[0].sentences).toHaveLength(0);
+    });
+
+    it('should return pages with sentences sorted by sentenceIndex', async () => {
+      // auth.getUser → 유효한 사용자 반환
+      mockSupabaseClient.auth.getUser.mockResolvedValueOnce({
+        data: { user: { id: 'user-123', email: 'test@test.com' } },
+        error: null,
+      });
+      // story 존재 확인 (single)
+      mockSupabaseClient.single.mockResolvedValueOnce({
+        data: { id: mockStories[0].id },
+        error: null,
+      });
+      // story_pages + story_page_sentences 조회 (order)
+      // mockPageWithSentences에는 sentence_index 순서가 뒤집혀 있음 (1, 0 순서로 저장)
+      mockSupabaseClient.order.mockResolvedValueOnce({
+        data: [mockPageWithSentences],
+        error: null,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/stories/${mockStories[0].id}/pages`)
+        .set('Authorization', 'Bearer valid-token')
+        .expect(200);
+
+      const page = response.body.pages[0];
+      expect(page.sentences).toHaveLength(2);
+      // sentenceIndex 오름차순 정렬 검증
+      expect(page.sentences[0].sentenceIndex).toBe(0);
+      expect(page.sentences[1].sentenceIndex).toBe(1);
+      expect(page.sentences[0].textKo).toBe('첫 번째 문장이에요.');
+      expect(page.sentences[0].audioUrlKo).toBe('https://example.com/s1_ko.mp3');
     });
   });
 });

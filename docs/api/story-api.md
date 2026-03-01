@@ -174,8 +174,9 @@ flowchart TD
     B --> C[StoryController.findPages]
     C --> D[StoryService.findPages]
     D --> E[SupabasePublic → stories 존재 확인]
-    E --> F[SupabasePublic → story_pages 조회]
-    F --> G[StoryPagesResponseDto 반환]
+    E --> F["SupabasePublic → story_pages + story_page_sentences(*) 조회"]
+    F --> G[sentence_index 오름차순 정렬]
+    G --> H[StoryPagesResponseDto 반환]
 ```
 
 ### 요청
@@ -199,11 +200,21 @@ flowchart TD
       "mediaType": "image",
       "videoUrl": null,
       "audioUrlKo": "https://...",
-      "audioUrlEn": "https://..."
+      "audioUrlEn": "https://...",
+      "sentences": [
+        {
+          "sentenceIndex": 0,
+          "textKo": "옛날 옛적에",
+          "textEn": "Once upon a time,",
+          "audioUrlKo": "https://..."
+        }
+      ]
     }
   ]
 }
 ```
+
+> `sentences`는 항상 배열. 없으면 `[]`. `audioUrlKo/En`은 Phase 2에서 제거 예정.
 
 ---
 
@@ -232,8 +243,17 @@ story_pages
 ├── media_type    TEXT    -- 'image' | 'video' (DEFAULT 'image')
 ├── image_url     TEXT
 ├── video_url     TEXT    -- AI 영상 MP4 URL (nullable)
-├── text_ko       TEXT
+├── text_ko       TEXT    -- 페이지 전체 텍스트 (하위 호환)
 ├── text_en       TEXT
-├── audio_url_ko  TEXT
-└── audio_url_en  TEXT
+├── audio_url_ko  TEXT    -- Phase 2에서 제거 예정
+└── audio_url_en  TEXT    -- Phase 2에서 제거 예정
+
+story_page_sentences              -- 문장 단위 TTS
+├── id              UUID    PK
+├── page_id         UUID    FK → story_pages.id ON DELETE CASCADE
+├── sentence_index  INT     -- 0-based, UNIQUE(page_id, sentence_index)
+├── text_ko         TEXT
+├── text_en         TEXT
+├── audio_url_ko    TEXT
+└── audio_url_en    TEXT
 ```

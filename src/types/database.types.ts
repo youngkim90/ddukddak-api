@@ -125,6 +125,44 @@ export interface Database {
           },
         ];
       };
+      story_page_sentences: {
+        Row: {
+          id: string;
+          page_id: string;
+          sentence_index: number;
+          text_ko: string | null;
+          text_en: string | null;
+          audio_url_ko: string | null;
+          audio_url_en: string | null;
+        };
+        Insert: {
+          id?: string;
+          page_id: string;
+          sentence_index: number;
+          text_ko?: string | null;
+          text_en?: string | null;
+          audio_url_ko?: string | null;
+          audio_url_en?: string | null;
+        };
+        Update: {
+          id?: string;
+          page_id?: string;
+          sentence_index?: number;
+          text_ko?: string | null;
+          text_en?: string | null;
+          audio_url_ko?: string | null;
+          audio_url_en?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'story_page_sentences_page_id_fkey';
+            columns: ['page_id'];
+            isOneToOne: false;
+            referencedRelation: 'story_pages';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       subscriptions: {
         Row: {
           id: string;

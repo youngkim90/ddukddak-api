@@ -44,6 +44,23 @@ export class StoryResponseDto {
   createdAt?: string;
 }
 
+export class SentenceDto {
+  @ApiProperty({ description: '문장 순서 인덱스 (0-based)' })
+  sentenceIndex!: number;
+
+  @ApiProperty({ description: '문장 텍스트 (한국어)', required: false })
+  textKo?: string;
+
+  @ApiProperty({ description: '문장 텍스트 (영어)', required: false })
+  textEn?: string;
+
+  @ApiProperty({ description: '문장 오디오 URL (한국어)', required: false })
+  audioUrlKo?: string;
+
+  @ApiProperty({ description: '문장 오디오 URL (영어)', required: false })
+  audioUrlEn?: string;
+}
+
 export class StoryPageDto {
   @ApiProperty({ description: '페이지 ID (UUID)' })
   id!: string;
@@ -71,6 +88,9 @@ export class StoryPageDto {
 
   @ApiProperty({ description: '오디오 URL (영어)', required: false })
   audioUrlEn?: string;
+
+  @ApiProperty({ description: '문장 단위 데이터 (TTS 큐 재생용)', type: [SentenceDto] })
+  sentences!: SentenceDto[];
 }
 
 export class StoryPagesResponseDto {
