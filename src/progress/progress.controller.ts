@@ -1,5 +1,6 @@
 import { Controller, Delete, Get, Put, Param, Body, ParseUUIDPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser } from '../common/decorators';
 import { ProgressService } from './progress.service';
@@ -7,6 +8,7 @@ import { ProgressListResponseDto, ProgressResponseDto, UpdateProgressDto } from 
 
 @ApiTags('progress')
 @ApiBearerAuth('access-token')
+@SkipThrottle({ strict: true })
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
