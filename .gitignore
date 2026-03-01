@@ -28,9 +28,6 @@ CLAUDE.local.md
 # Work reports (내부 전달용)
 docs/work-report/
 
-# Supabase
-supabase/migrations/
-
 # IDE
 .idea/
 .vscode/

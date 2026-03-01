@@ -9,7 +9,7 @@
 ### 주요 기능
 
 - 동화 목록 및 상세 조회 (카테고리/연령별 필터)
-- 동화 뷰어 (페이지 넘김, TTS, AI 영상, BGM)
+- 동화 뷰어 (페이지 넘김, 문장 단위 TTS, AI 영상, BGM)
 - 읽기 진행률 저장 및 조회
 - 구독 결제 (추후 RevenueCat 인앱결제 - MVP는 무료 출시)
 - 사용자 프로필 관리
@@ -101,6 +101,7 @@ CORS_ORIGIN=http://localhost:3000
 | GET | `/api/progress` | 진행률 목록 | JWT |
 | GET | `/api/progress/:storyId` | 동화 진행률 조회 | JWT |
 | PUT | `/api/progress/:storyId` | 동화 진행률 저장 | JWT |
+| DELETE | `/api/progress` | 전체 진행률 초기화 | JWT |
 | GET | `/api/subscriptions/plans` | 구독 플랜 | |
 | GET | `/api/subscriptions/me` | 내 구독 정보 | JWT |
 | POST | `/api/subscriptions` | 구독 시작 | JWT |
