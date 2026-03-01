@@ -54,10 +54,7 @@ export class TossService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        `TossPayments billing failed: ${(error as { message?: string }).message ?? 'Unknown error'}`,
-      );
+      throw new Error('TossPayments billing failed');
     }
 
     return response.json() as Promise<TossPaymentResponse>;
@@ -75,10 +72,7 @@ export class TossService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        `TossPayments billing info failed: ${(error as { message?: string }).message ?? 'Unknown error'}`,
-      );
+      throw new Error('TossPayments billing info failed');
     }
 
     return response.json() as Promise<TossBillingResponse>;
@@ -100,10 +94,7 @@ export class TossService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(
-        `TossPayments cancel failed: ${(error as { message?: string }).message ?? 'Unknown error'}`,
-      );
+      throw new Error('TossPayments cancel failed');
     }
   }
 
@@ -113,6 +104,10 @@ export class TossService {
   verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
     const expectedSignature = crypto.createHmac('sha256', secret).update(payload).digest('base64');
 
-    return signature === expectedSignature;
+    const sig = Buffer.from(signature ?? '', 'utf8');
+    const expected = Buffer.from(expectedSignature, 'utf8');
+
+    if (sig.length !== expected.length) return false;
+    return crypto.timingSafeEqual(sig, expected);
   }
 }

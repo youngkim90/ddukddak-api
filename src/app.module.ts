@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import configuration from './config/configuration';
 import { JwtAuthGuard, SubscriptionGuard } from './common/guards';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -19,6 +20,10 @@ import { WebhookModule } from './webhook/webhook.module';
       isGlobal: true,
       load: [configuration],
     }),
+    ThrottlerModule.forRoot([
+      { name: 'default', ttl: 60000, limit: 60 }, // 일반: 60req/분
+      { name: 'strict', ttl: 60000, limit: 10 }, // 민감: 10req/분 (write 작업용)
+    ]),
     SupabaseModule,
     HealthModule,
     UserModule,
@@ -36,6 +41,10 @@ import { WebhookModule } from './webhook/webhook.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     {
       provide: APP_GUARD,

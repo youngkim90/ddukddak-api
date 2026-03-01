@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Tables } from '../types/database.types';
 import {
@@ -36,7 +36,7 @@ export class StoryService {
       .range(offset, offset + limit - 1);
 
     if (error) {
-      throw new Error(`Failed to fetch stories: ${error.message}`);
+      throw new InternalServerErrorException('Failed to fetch stories');
     }
 
     const total = count ?? 0;
@@ -93,7 +93,7 @@ export class StoryService {
       .order('page_number', { ascending: true });
 
     if (pagesError) {
-      throw new Error(`Failed to fetch story pages: ${pagesError.message}`);
+      throw new InternalServerErrorException('Failed to fetch story pages');
     }
 
     return {

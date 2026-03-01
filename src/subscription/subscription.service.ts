@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
 import { TossService } from './toss.service';
@@ -125,7 +130,7 @@ export class SubscriptionService {
       .single();
 
     if (error || !data) {
-      throw new Error(`Failed to create subscription: ${error?.message}`);
+      throw new InternalServerErrorException('Failed to create subscription');
     }
 
     return this.mapToResponse(data);
@@ -155,7 +160,7 @@ export class SubscriptionService {
       .eq('id', subscription.id);
 
     if (error) {
-      throw new Error(`Failed to cancel subscription: ${error.message}`);
+      throw new InternalServerErrorException('Failed to cancel subscription');
     }
   }
 
