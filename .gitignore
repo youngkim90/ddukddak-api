@@ -28,8 +28,8 @@ CLAUDE.local.md
 # Work reports (내부 전달용)
 docs/work-report/
 
-# Supabase local
-supabase/.temp/
+# Supabase
+supabase/migrations/
 
 # IDE
 .idea/
@@ -54,6 +54,7 @@ coverage/
 
 # Supabase CLI
 supabase/.temp/
+supabase/.branches/
 
 # Sentry
 .sentryclirc
