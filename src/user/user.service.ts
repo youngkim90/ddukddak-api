@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Tables } from '../types/database.types';
@@ -39,7 +39,7 @@ export class UserService {
       .single();
 
     if (error) {
-      throw new Error(`Failed to update profile: ${error.message}`);
+      throw new InternalServerErrorException('Failed to update profile');
     }
 
     return this.mapToResponse(data);
@@ -53,7 +53,7 @@ export class UserService {
     const { error } = await this.supabaseService.getAdminClient().auth.admin.deleteUser(user.id);
 
     if (error) {
-      throw new Error(`Failed to delete account: ${error.message}`);
+      throw new InternalServerErrorException('Failed to delete account');
     }
   }
 

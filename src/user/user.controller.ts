@@ -1,5 +1,6 @@
 import { Controller, Get, Patch, Delete, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser } from '../common/decorators';
 import { UserService } from './user.service';
@@ -24,6 +25,7 @@ export class UserController {
   }
 
   @Patch('me')
+  @Throttle({ strict: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: '프로필 수정' })
   @ApiResponse({
     status: 200,
@@ -39,6 +41,7 @@ export class UserController {
   }
 
   @Delete('me')
+  @Throttle({ strict: { limit: 10, ttl: 60000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: '회원 탈퇴' })
   @ApiResponse({ status: 204, description: '회원 탈퇴 성공' })

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import type { User } from '@supabase/supabase-js';
 import { SupabaseService } from '../supabase/supabase.service';
 import { Tables } from '../types/database.types';
@@ -29,7 +29,7 @@ export class ProgressService {
       .order('last_read_at', { ascending: false });
 
     if (error) {
-      throw new Error(`Failed to fetch progress: ${error.message}`);
+      throw new InternalServerErrorException('Failed to fetch progress');
     }
 
     const progressList = (data ?? []).map((item) => this.mapToResponse(item));
@@ -104,7 +104,7 @@ export class ProgressService {
       .single();
 
     if (error || !data) {
-      throw new Error(`Failed to update progress: ${error?.message}`);
+      throw new InternalServerErrorException('Failed to update progress');
     }
 
     return this.mapToResponse(data);
@@ -118,7 +118,7 @@ export class ProgressService {
       .eq('user_id', user.id);
 
     if (error) {
-      throw new Error(`Failed to reset progress: ${error.message}`);
+      throw new InternalServerErrorException('Failed to reset progress');
     }
 
     return { message: 'All progress reset successfully' };

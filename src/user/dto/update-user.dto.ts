@@ -10,6 +10,6 @@ export class UpdateUserDto {
 
   @ApiPropertyOptional({ description: '프로필 이미지 URL' })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({ protocols: ['http', 'https'], require_protocol: true })
   avatarUrl?: string;
 }
