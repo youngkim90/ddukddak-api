@@ -104,6 +104,7 @@ export class ProgressService {
       .single();
 
     if (error || !data) {
+      console.error('[ProgressService] upsert error:', error?.message, error?.code);
       throw new InternalServerErrorException('Failed to update progress');
     }
 
