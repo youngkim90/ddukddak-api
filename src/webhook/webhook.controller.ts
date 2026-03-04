@@ -12,6 +12,7 @@ import type { RawBodyRequest } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../common/decorators';
 import { TossService } from '../subscription/toss.service';
 import { SubscriptionService } from '../subscription/subscription.service';
@@ -29,6 +30,7 @@ interface TossWebhookPayload {
 }
 
 @ApiTags('webhooks')
+@SkipThrottle({ feedback: true })
 @Controller('webhooks')
 export class WebhookController {
   private readonly webhookSecret: string;

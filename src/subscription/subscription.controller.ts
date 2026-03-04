@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Delete, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser, Public } from '../common/decorators';
 import { SubscriptionService } from './subscription.service';
@@ -10,6 +11,7 @@ import {
 } from './dto';
 
 @ApiTags('subscriptions')
+@SkipThrottle({ feedback: true })
 @Controller('subscriptions')
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}

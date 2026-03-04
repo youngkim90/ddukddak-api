@@ -8,7 +8,7 @@ import { ProgressListResponseDto, ProgressResponseDto, UpdateProgressDto } from 
 
 @ApiTags('progress')
 @ApiBearerAuth('access-token')
-@SkipThrottle({ strict: true })
+@SkipThrottle({ strict: true, feedback: true })
 @Controller('progress')
 export class ProgressController {
   constructor(private readonly progressService: ProgressService) {}
