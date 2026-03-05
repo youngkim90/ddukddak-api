@@ -13,6 +13,7 @@ import { StoryModule } from './story/story.module';
 import { ProgressModule } from './progress/progress.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { WebhookModule } from './webhook/webhook.module';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { WebhookModule } from './webhook/webhook.module';
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60000, limit: 60 }, // 일반: 60req/분
       { name: 'strict', ttl: 60000, limit: 10 }, // 민감: 10req/분 (write 작업용)
+      { name: 'feedback', ttl: 60000, limit: 3 }, // 피드백: 3req/분 (중복 제출 방지)
     ]),
     SupabaseModule,
     HealthModule,
@@ -31,6 +33,7 @@ import { WebhookModule } from './webhook/webhook.module';
     ProgressModule,
     SubscriptionModule,
     WebhookModule,
+    FeedbackModule,
   ],
   controllers: [],
   providers: [

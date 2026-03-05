@@ -249,6 +249,55 @@ export interface Database {
           },
         ];
       };
+      feedbacks: {
+        Row: {
+          id: string;
+          user_id: string;
+          category: string;
+          rating: number;
+          message: string;
+          source: string;
+          story_id: string | null;
+          page_number: number | null;
+          language: string | null;
+          contact_email: string | null;
+          metadata: Record<string, unknown>;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          category: string;
+          rating: number;
+          message: string;
+          source: string;
+          story_id?: string | null;
+          page_number?: number | null;
+          language?: string | null;
+          contact_email?: string | null;
+          metadata?: Record<string, unknown>;
+          status?: string;
+          created_at?: string;
+        };
+        Update: {
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feedbacks_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'feedbacks_story_id_fkey';
+            columns: ['story_id'];
+            referencedRelation: 'stories';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     Views: {};

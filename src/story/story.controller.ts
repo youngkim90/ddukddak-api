@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query, ParseUUIDPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Public, RequireSubscription } from '../common/decorators';
 import { StoryService } from './story.service';
 import {
@@ -10,6 +11,7 @@ import {
 } from './dto';
 
 @ApiTags('stories')
+@SkipThrottle({ feedback: true })
 @Controller('stories')
 export class StoryController {
   constructor(private readonly storyService: StoryService) {}

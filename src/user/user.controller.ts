@@ -1,5 +1,6 @@
 import { Controller, Get, Patch, Delete, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import type { User } from '@supabase/supabase-js';
 import { CurrentUser, ThrottleStrict } from '../common/decorators';
 import { UserService } from './user.service';
@@ -7,6 +8,7 @@ import { UpdateUserDto, UserResponseDto } from './dto';
 
 @ApiTags('users')
 @ApiBearerAuth('access-token')
+@SkipThrottle({ feedback: true })
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

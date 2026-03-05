@@ -94,6 +94,19 @@ interface Subscription {
 }
 ```
 
+### Feedback
+
+```typescript
+interface FeedbackResponse {
+  id: string;
+  category: 'bug' | 'content' | 'ux' | 'performance' | 'suggestion';
+  rating: number;       // 1~5
+  message: string;
+  status: 'received';   // 제출 직후 항상 'received'
+  createdAt: string;
+}
+```
+
 ---
 
 ## API 엔드포인트
@@ -287,7 +300,62 @@ interface Subscription {
 
 ---
 
-### 4. 구독 (Subscriptions)
+### 4. 피드백 (Feedback)
+
+#### POST /api/feedback 🔒
+피드백 제출
+
+> ⚡ **Rate Limit**: 1분당 3회 (초과 시 429)
+
+**Request Body:**
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| `category` | string | ✅ | `bug` \| `content` \| `ux` \| `performance` \| `suggestion` |
+| `rating` | number | ✅ | 1~5 정수 |
+| `message` | string | ✅ | 10~500자 |
+| `source` | string | ✅ | `viewer_complete` \| `settings_customer_center` |
+| `storyId` | string | ❌ | UUID — 특정 동화 관련 피드백 시 |
+| `pageNumber` | number | ❌ | 양의 정수 |
+| `language` | string | ❌ | `ko` \| `en` |
+| `contactEmail` | string | ❌ | 이메일 형식 |
+| `metadata` | object | ❌ | `platform`, `appVersion`, `deviceModel` 등 |
+
+```json
+{
+  "category": "ux",
+  "rating": 4,
+  "message": "동화 뷰어가 너무 좋아요!",
+  "source": "viewer_complete",
+  "storyId": "uuid",
+  "language": "ko",
+  "metadata": { "platform": "ios", "appVersion": "1.0.0" }
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "uuid",
+  "category": "ux",
+  "rating": 4,
+  "message": "동화 뷰어가 너무 좋아요!",
+  "status": "received",
+  "createdAt": "2026-03-05T00:00:00.000Z"
+}
+```
+
+**에러:**
+- `401`: 미인증 (로그인 필요)
+- `400`: 유효성 검사 실패 (category 범위 초과, message 10자 미만 등)
+- `429`: 1분당 3회 초과 — 잠시 후 재시도
+
+> **source 값 가이드**
+> - `viewer_complete`: 뷰어에서 동화를 완독 후 노출되는 피드백 폼
+> - `settings_customer_center`: 설정 → 고객센터에서 제출하는 피드백 폼
+
+---
+
+### 5. 구독 (Subscriptions)
 
 #### GET /api/subscriptions/plans 🔓
 구독 플랜 목록
@@ -380,6 +448,7 @@ interface Subscription {
 | 401 | Unauthorized - 인증 실패 |
 | 403 | Forbidden - 권한 없음 (구독 필요 등) |
 | 404 | Not Found - 리소스 없음 |
+| 429 | Too Many Requests - Rate Limit 초과 |
 | 500 | Internal Server Error - 서버 오류 |
 
 ---
@@ -465,6 +534,7 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 | GET /api/subscriptions/me | ✅ 완료 | ✅ 완료 | 구독 없으면 `{ subscription: null }` |
 | POST /api/subscriptions | 🔄 스켈레톤 | ⏳ 대기 | 토스 실제 연동 대기 |
 | DELETE /api/subscriptions/me | ✅ 완료 | ✅ 완료 | |
+| POST /api/feedback | ✅ 완료 | ⏳ 대기 | 1분당 3회 Rate Limit |
 
 ---
 
@@ -489,4 +559,4 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api
 
 ---
 
-*마지막 업데이트: 2026-02-24 (sentences 문장 단위 TTS 필드 추가)*
+*마지막 업데이트: 2026-03-05 (POST /api/feedback 피드백 API 추가)*
